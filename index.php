@@ -626,7 +626,8 @@ foreach($files as $file){
 		array_pop($parts);
 		$fnm = join(".",$parts);
 		if(file_exists("$where/$fnm.THM")){
-			print "<td bgcolor=\"$tdBgcolor2\"><img src=\"$relative/$add/$fnm.THM\" width=\"$thumbWidth\" height=\"$thumbHeight\"></td>";
+			#print "<td bgcolor=\"$tdBgcolor2\"><img src=\"$relative/$add/$fnm.THM\" width=\"$thumbWidth\" height=\"$thumbHeight\"></td>";
+			print "<td bgcolor=\"$tdBgcolor2\"><img src=\"$relative/$add/$fnm.THM\"></td>";
 		}
 		print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/$add/$file\">$file</a></td><td>$size</td>";
 		print "</tr><tr>\n";
