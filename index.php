@@ -253,7 +253,7 @@ function genpreview($dir,$reldir,$add,$link){
 			if($add != ""){
 				print "<img border=0 width=\"$pv_thumbWidth\" height=\"$pv_thumbHeight\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
 			} else {
-				print "<img border=0 width=\"$pv_thumbHeight\" height=\"$pv_thumbWidth\" src=\"$reldir/pv_thumb.jpg\">";
+				print "<img border=0 width=\"$pv_thumbWidth\" height=\"$pv_thumbHeight\" src=\"$reldir/pv_thumb.jpg\">";
 			}
 			print "</a>";
 		}
