@@ -304,6 +304,7 @@ if($mode == "single"){
 	}
 	$dir = join("/",$parts);
 	$dir = preg_replace("/\\\\/","",$dir);
+	$origdir = preg_replace("/\\\\/","",$origdir);
 
 	$wpts = preg_split("/\//",$dir);
 	if(ereg("Low",$wpts[count($wpts) - 1])){
