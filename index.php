@@ -49,20 +49,16 @@ Good luck! Send any questions / comments / concerns to php@loki.ws
 ###################################################################
 
 // set this to wherever your root dir for pics is (at a filesystem level)
-$prefix = "/home/httpd/haven.loki.ws/digcamera";
-//$prefix = "/var/www/htdocs/pics";
+$prefix = "/var/www/htdocs/pics";
 
 //set this to your relative path (what a user would see in the address bar after your server name)
-//$relative = "/pics";
-$relative = "/digcamera";
+$relative = "/pics";
 
 //this is the name that goes into the title for the site
-//$site_name = "Your site here";
-$site_name = "haven.loki.ws";
+$site_name = "Your site here";
 
 //this is the path to convert (`which convert`)
-//$convert = '/usr/bin/convert';
-$convert = 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib /usr/local/bin/convert';
+$convert = '/usr/bin/convert';
 // if that dosen't work, try this line, and change the path  vvv here
 #$convert = 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib /usr/local/bin/convert';
 
