@@ -113,6 +113,7 @@ if(!$where){
 	$where = $prefix;
 	$add = '';
 } else {
+	$where = preg_replace("/\\\\/","",$where);
 	if(strstr($where,"..")) $where = "";
 	if(!is_dir($prefix.'/'.$where)) $where = "";
 	$add = $where;
