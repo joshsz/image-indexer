@@ -456,7 +456,7 @@ if($mode == "single"){
 	$w = $imsz[0];
 	$h = $imsz[1];
 	$fontstuff = "<font face=\"$fontFace\">";
-	print "<img src=\"$timg\"";
+	print "<a href=\"$wheredir/$tfl\" target=\"_new\"><img border=\"0\" src=\"$timg\"";
 	if($w > 0) print "width=$w height=$h";
 	print ">\n";
 	print "</td></tr>";
