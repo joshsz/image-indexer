@@ -265,13 +265,13 @@ function genpreview($dir,$reldir,$add,$link){
 				$x=$y;
 				$y=$pv_thumbWidth;
 			}
-			print "<a href=\"$link\">";
+			print "<a href=\"$link\"><center>";
 			if($add != ""){
 				print "<img border=0 width=\"$x\" height=\"$y\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
 			} else {
 				print "<img border=0 width=\"$x\" height=\"$y\" src=\"$reldir/pv_thumb.jpg\">";
 			}
-			print "</a>";
+			print "</center></a>";
 		}
 	}
 }
