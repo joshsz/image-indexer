@@ -62,9 +62,6 @@ $convert = '/usr/bin/convert';
 // if that dosen't work, try this line, and change the path  vvv here
 #$convert = 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib /usr/local/bin/convert';
 
-//this is the line that's shown at the top of each page
-$titleLine = "<p><center><font size=+2 face=\"Verdana\">Camera Pictures</font></center></p>";
-
 //this is the sorting algorithm to use: the choices are:
 // jdircmp: sorts directories in the form "MM-DD-YYYY (Description)"
 // ndircmp: sorts directories by natural case-insensitive comparison (e.g.: 1 2 3 a B c)
@@ -81,6 +78,7 @@ $footTextColor = "#888888";
 
 $fontFace = "Verdana";
 $fontSize = "-2";
+$titleFontSize = "+2";
 $imageTitleFontSize = "-1";
 
 $thumbWidth = 120;
@@ -89,6 +87,10 @@ $lowWidth = 640;
 $lowHeight = 480;
 $pv_thumbWidth = 100;
 $pv_thumbHeight = 75;
+
+//this is the line that's shown at the top of each page
+$titleLine = "<p><center><font size=\"$titleFontSize\" face=\"$fontFace\">Camera Pictures</font></center></p>";
+
 ####################################################################
 #### CONFIGURATION ENDS HERE #######################################
 ####################################################################
