@@ -137,8 +137,8 @@ function dircmp($a, $b){
 	$astat = stat("$where"."$a");
 	$bstat = stat("$where"."$b");
 
-	if($astat[10] == $bstat[10]) return 0;
-	return($astat[10] > $bstat[10] ? -1 : 1);
+	if($astat[9] == $bstat[9]) return 0;
+	return($astat[9] > $bstat[9] ? -1 : 1);
 }
 
 
@@ -654,7 +654,7 @@ foreach ($dirs as $dir){
 	$ldir = preg_replace("/ /","%20",$dir);
 	if ($viewdate){
 		$stat = stat("$where/$dir");
-		$date = date("l, F dS, Y",$stat[10]);
+		$date = date("l, F dS, Y",$stat[9]);
 	}
 	if ($viewdate){
 		$link = "$PHP_SELF?viewdate=yes&where=$add/$ldir";
