@@ -65,6 +65,7 @@ $convert = '/usr/bin/convert';
 //this is the sorting algorithm to use: the choices are:
 // jdircmp: sorts directories in the form "MM-DD-YYYY (Description)"
 // ndircmp: sorts directories by natural case-insensitive comparison (e.g.: 1 2 3 a B c)
+// dircmp: sorts directories by timestamp
 $cmpfunc = "jdircmp";
 
 $bgcolor = "#000000";
