@@ -245,9 +245,9 @@ function genpreview($dir,$reldir,$add,$link){
 		$source = "$dir/".$pics[0];
 	}
 	if($source != ""){
+		$flip=0;
 		$size = @getimagesize($source);
 		if($size && $size[1] > $size[0]){ $flip=1; }
-		$flip=0;
 		if(!file_exists("$dir/pv_thumb.jpg") or (filectime($source) > filectime("$dir/pv_thumb.jpg"))){
 			# here is where to check
 			$cmd = "$convert -resize $pv_thumbWidth"."x"."$pv_thumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
