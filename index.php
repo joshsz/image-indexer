@@ -283,6 +283,9 @@ function getPixArray($where){
 
 function crumnav($add,$imnm){
 	global $fontSize,$fontFace,$viewdate,$PHP_SELF;
+	if(!preg_match("/^\//",$add)){
+		$add="/$add";
+	}
 	$fsu="<font size=\"$fontSize\" face=\"$fontFace\">";
 	print "<tr><td><table border=0><tr><td>$fsu"."You are here:</font></td><td>$fsu<a href=\"$PHP_SELF";
 	if($viewdate) print "?viewdate=$viewdate";
@@ -345,6 +348,9 @@ if($mode == "single"){
 	array_shift($parts);
 	if(strlen($relative) > 2){
 		array_shift($parts);
+		if(preg_match("/$parts[0]/",$relative)){
+			array_shift($parts);
+		}
 	}
 	$dir = join("/",$parts);
 	$dir = preg_replace("/\\\\/","",$dir);
