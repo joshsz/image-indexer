@@ -251,9 +251,9 @@ function genpreview($dir,$reldir,$add,$link){
 		if(file_exists("$dir/pv_thumb.jpg")){
 			print "<a href=\"$link\">";
 			if($add != ""){
-				print "<img border=0 width=$PVthumbWidth height=$PVthumbHeight src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
+				print "<img border=0 width=\"$PVthumbWidth\" height=\"$PVthumbHeight\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
 			} else {
-				print "<img border=0 width=$PVthumbWidth height=$PVthumbHeight src=\"$reldir/pv_thumb.jpg\">";
+				print "<img border=0 width=\"$PVthumbWidth\" height=\"$PVthumbHeight\" src=\"$reldir/pv_thumb.jpg\">";
 			}
 			print "</a>";
 		}
