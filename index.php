@@ -655,12 +655,13 @@ foreach($files as $file){
 		$parts = preg_split("/\./",$file);
 		array_pop($parts);
 		$fnm = join(".",$parts);
-		$add=preg_replace("/\//","",$add);
+
+		$madd=rawurlencode($add);
+		$madd=preg_replace("/%2F/","/",$madd);
 		if(file_exists("$where/$fnm.THM")){
-			#print "<td bgcolor=\"$tdBgcolor2\"><img src=\"$relative/$add/$fnm.THM\" width=\"$thumbWidth\" height=\"$thumbHeight\"></td>";
-			print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/".rawurlencode($add)."/".rawurlencode($file)."\"><img border=\"0\" src=\"$relative/$add/$fnm.THM\"></a></td>";
+			print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/$madd/".rawurlencode($file)."\"><img border=\"0\" src=\"$relative/$madd/$fnm.THM\"></a></td>";
 		} else { print "<td></td>"; }
-		print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/".rawurlencode($add)."/".rawurlencode($file)."\">$file</a></td><td>$size</td>";
+		print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/$madd/".rawurlencode($file)."\">$file</a></td><td>$size</td>";
 		print "</tr><tr>\n";
 	}
 }
