@@ -429,9 +429,9 @@ if(file_exists($where."/description.txt")){
         $fh = fopen($where."description.txt","r");
         $data = fread($fh,filesize($where."description.txt"));
         fclose($fh);
-	print "<p align=center>";
+	print "<tr><td align=center>";
 	print preg_replace("/\n/","<br>\n",$data);
-	print "</p>";
+	print "</td></tr>>";
 }
 
 
