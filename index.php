@@ -77,6 +77,7 @@ $alinkColor = "#eecccc";
 $vlinkColor = "#aa8888";
 $tdBgcolor = "#222222";
 $tdBgcolor2 = "#333333";
+$footTextColor = "#888888";
 
 $fontFace = "Verdana";
 $fontSize = "-2";
@@ -100,8 +101,8 @@ ignore_user_abort(true);
 
 $footerLine="
 <center><img src=http://haven.loki.ws/artistic.gif></center><br>
-<center><font face=\"Verdana\" color=\"#888888\">This page best viewed with a recent browser.</font></center><br>
-<font size=-2 face=\"Verdana\" color=\"#888888\"><center>This php thing &copy; <a href=\"mailto:php@loki.ws\">Joshua Szmajda</a> 2002</center></font>
+<center><font face=\"$fontFace\" color=\"$footTextColor\">This page best viewed with a recent browser.</font></center><br>
+<font size=-2 face=\"$fontFace\" color=\"$footTextColor\"><center>This php thing &copy; <a href=\"mailto:php@loki.ws\">Joshua Szmajda</a> 2002</center></font>
 <script language=javascript src=\"http://loki.ws/awstats_misc_tracker.js\"></script>
 </body></html>";
 // if we didn't get a path, use the default one of just the prefix
