@@ -114,17 +114,12 @@ if(!$where){
 	$add = '';
 } else {
 	if(strstr($where,"..")) $where = "";
-	if(!is_dir($where)) $where = "";
+	if(!is_dir($prefix.'/'.$where)) $where = "";
 	$add = $where;
 	$rwhere = $relative . '/' . $where;
 	$where = $prefix . '/' . $where;
 }
 $where .= '/'; //need / for find's weirdness
-
-function badcheck($str){
-	//return preg_match("/[\;\!\@\#\$\%\^\&\*\[\]\{\}\:]/",$str);
-	return !preg_match("/^[a-zA-Z0-9\.\ \-\/\(\)\,]*$/",$str);
-}
 
 function checkfiletypes($file){
 	$filetypes = array ("wpd", "txt", "avi", "rm", "mpg", "mpeg", "url", "mov", "wmv");
@@ -314,8 +309,10 @@ if($mode == "single"){
 	}
 	$wheredir = join("/",$wpts);
 
+	$tfl = preg_replace("/\\\\/","",$file);
+	$timg = preg_replace("/\\\\/","",$img);
 	$pics = getPixArray($prefix.$dir);
-	$idx = array_search($file,$pics);
+	$idx = array_search($tfl,$pics);
 	$next = $idx+1;
 	$prev = $idx-1;
 	$size = count($pics) - 1;
@@ -340,12 +337,11 @@ if($mode == "single"){
 	print "<center><font size=\"$fontSize\" face=\"$fontFace\"><a href=\"$backlink\">Back</a></font></center><br>\n";
 	print "<table align=center border=0>";
 	print "<tr><td colspan=3 align=center>";
-	$tfl = preg_replace("/\\/","",$file);
 	$imsz = getimagesize($prefix.$dir."/".$tfl);
 	$w = $imsz[0];
 	$h = $imsz[1];
 	$fontstuff = "<font face=\"$fontFace\">";
-	print "<img src=\"$img\"";
+	print "<img src=\"$timg\"";
 	if($w > 0) print "width=$w height=$h";
 	print ">\n";
 	print "</td></tr>";
