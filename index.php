@@ -245,12 +245,13 @@ function genpreview($dir,$reldir,$add,$link){
 		$source = "$dir/".$pics[0];
 	}
 	if($source != ""){
+		$flip=0;
 		if(!file_exists("$dir/pv_thumb.jpg") or (filectime($source) > filectime("$dir/pv_thumb.jpg"))){
 			# here is where to check
 			$cmd = "$convert -resize $pv_thumbWidth"."x"."$pv_thumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
 			$size = @getimagesize($source);
 			if($size && $size[1] > $size[0]){
-				print "vertical thumbnail\n<br>";
+				$flip=1;
 				$cmd = "$convert -resize $pv_thumbHeight"."x"."$pv_thumbWidth \"$source\" \"$dir/pv_thumb.jpg\"";
 			}
 			`$cmd`;
@@ -258,11 +259,17 @@ function genpreview($dir,$reldir,$add,$link){
 			`$cmd`;
 		}
 		if(file_exists("$dir/pv_thumb.jpg")){
+			$x=$pv_thumbWidth;
+			$y=$pv_thumbHeight;
+			if($flip){
+				$x=$y;
+				$y=$pv_thumbWidth;
+			}
 			print "<a href=\"$link\">";
 			if($add != ""){
-				print "<img border=0 width=\"$pv_thumbWidth\" height=\"$pv_thumbHeight\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
+				print "<img border=0 width=\"$x\" height=\"$y\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
 			} else {
-				print "<img border=0 width=\"$pv_thumbWidth\" height=\"$pv_thumbHeight\" src=\"$reldir/pv_thumb.jpg\">";
+				print "<img border=0 width=\"$x\" height=\"$y\" src=\"$reldir/pv_thumb.jpg\">";
 			}
 			print "</a>";
 		}
