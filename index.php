@@ -65,8 +65,29 @@ $convert = '/usr/bin/convert';
 //this is the line that's shown at the top of each page
 $titleLine = "<p><center><font size=+2 face=\"Verdana\">Camera Pictures</font></center></p>";
 
-//this is the sorting algorithm to use
+//this is the sorting algorithm to use: the choices are:
+// jdircmp: sorts directories in the form "MM-DD-YYYY (Description)"
+// ndircmp: sorts directories by natural case-insensitive comparison (e.g.: 1 2 3 a B c)
 $cmpfunc = "jdircmp";
+
+$bgcolor = "#000000";
+$textColor = "#FFFFFF";
+$linkColor = "#ccaaaa";
+$alinkColor = "#eecccc";
+$vlinkColor = "#aa8888";
+$tdBgcolor = "#222222";
+$tdBgcolor2 = "#333333";
+
+$fontFace = "Verdana";
+$fontSize = "-2";
+$imageTitleFontSize = "-1";
+
+$thumbWidth = 120;
+$thumbHeight = 90;
+$lowWidth = 640;
+$lowHeight = 480;
+$PVthumbWidth = 100;
+$PVthumbHeight = 75;
 ####################################################################
 #### CONFIGURATION ENDS HERE #######################################
 ####################################################################
@@ -152,6 +173,10 @@ function jdircmp($a, $b){
         }
 }
 
+function ndircmp($a, $b){
+	return -1 * strnatcasecmp($a,$b);
+}
+
 function junker($val){
 	return ((!strstr($val,"Low")) and (!strstr($val,"tn")));
 }
@@ -218,7 +243,7 @@ function genpreview($dir,$reldir,$add,$link){
 	}
 	if($source != ""){
 		if(!file_exists("$dir/pv_thumb.jpg") or (filectime($source) > filectime("$dir/pv_thumb.jpg"))){
-			$cmd = "$convert -resize 100x75 \"$source\" \"$dir/pv_thumb.jpg\"";
+			$cmd = "$convert -resize $PVthumbWidth"."x"."$PVthumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
 			`$cmd`;
 			$cmd = "chmod a+rwx \"$dir/pv_thumb.jpg\"";
 			`$cmd`;
@@ -226,9 +251,9 @@ function genpreview($dir,$reldir,$add,$link){
 		if(file_exists("$dir/pv_thumb.jpg")){
 			print "<a href=\"$link\">";
 			if($add != ""){
-				print "<img border=0 width=100 height=75 src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
+				print "<img border=0 width=$PVthumbWidth height=$PVthumbHeight src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
 			} else {
-				print "<img border=0 width=100 height=75 src=\"$reldir/pv_thumb.jpg\">";
+				print "<img border=0 width=$PVthumbWidth height=$PVthumbHeight src=\"$reldir/pv_thumb.jpg\">";
 			}
 			print "</a>";
 		}
@@ -305,15 +330,15 @@ if($mode == "single"){
 		print "<meta HTTP-EQUIV=\"Refresh\" Content=\"$timer;URL=$autolink\">";
 	}
 	print "</head>";
-	print "<body bgcolor=\"#000000\" text=#ffffff link=#ccaaaa alink=#eecccc vlink=#aa8888>";
+	print "<body bgcolor=\"$bgcolor\" text=\"$textColor\" link=\"$linkColor\" alink=\"$alinkColor\" vlink=\"$vlinkColor\">";
 	print $titleLine;
-	print "<center><font size=-2 face=\"Verdana\"><a href=\"$backlink\">Back</a></font></center><br>\n";
+	print "<center><font size=\"$fontSize\" face=\"$fontFace\"><a href=\"$backlink\">Back</a></font></center><br>\n";
 	print "<table align=center border=0>";
 	print "<tr><td colspan=3 align=center>";
 	$imsz = getimagesize($prefix.$dir."/".$file);
 	$w = $imsz[0];
 	$h = $imsz[1];
-	$fontstuff = "<font face=\"Verdana\">";
+	$fontstuff = "<font face=\"$fontFace\">";
 	print "<img src=\"$img\"";
 	if($w > 0) print "width=$w height=$h";
 	print ">\n";
@@ -346,7 +371,7 @@ if($mode == "single"){
 }
 ?>
 </title></head>
-<body bgcolor="#000000" text=#ffffff link=#ccaaaa alink=#eecccc vlink=#aa8888>
+<body bgcolor="<?echo $bgcolor?>" text="<?echo $textColor?>" link="<?echo $linkColor?>" alink="<?echo $alinkColor?>" vlink="<?echo $vlinkColor?>">
 <?echo $titleLine?>
 
 <?php
@@ -362,7 +387,7 @@ if(strlen($updir) > 2){
 	$uplink = $PHP_SELF;
 	if($viewdate) $uplink .= "?viewdate=$viewdate";
 }
-?><center><font size=-2 face="Verdana"><a href="<?echo $uplink?>">up one directory</a></font></center><?php
+?><center><font size="<?echo $fontSize?>" face="<?echo $fontFace?>"><a href="<?echo $uplink?>">up one directory</a></font></center><?php
 }
 
 if(file_exists($where."/description.txt")){
@@ -377,12 +402,6 @@ if(file_exists($where."/description.txt")){
 
 // this section process pictures in the current dir
 $flag = 1;
-/* $pic = `find "$where" -iregex '.*\.jpg.*' -maxdepth 1`;
-$pic .= `find "$where" -iregex '.*\.gif.*' -maxdepth 1`;
-$pic = substr($pic,0,-1); // chomp
-$spic = $pic;
-$pics = split("\n",$pic);
-$pics = deprefix($pics,$where); */
 
 $pics = getPixArray($where);
 
@@ -428,9 +447,9 @@ if((!file_exists("$where"."tn") or ($pics != $upic)) and $pics){
 			@unlink("$where"."tn/$pic");
 			$size = getimagesize("$where"."$pic");
 			if(($size[0] > $size[1]) or (!$size)){
-				$filegot = cvt($pic,$where,"tn",120,90);
+				$filegot = cvt($pic,$where,"tn",$thumbWidth,$thumbHeight);
 			} else {
-				$filegot = cvt($pic,$where,"tn",90,120);
+				$filegot = cvt($pic,$where,"tn",$thumbHeight,$thumbWidth);
 			}
 		}
 
@@ -467,9 +486,9 @@ if((!file_exists("$where"."Low") or ($pics != $vpic)) and $pics){
 			@unlink("$where"."Low/$pic");
 			$size = getimagesize("$where"."$pic");
 			if(($size[0] > $size[1]) or (!$size)){
-				$filegot = cvt($pic,$where,"Low",640,480);
+				$filegot = cvt($pic,$where,"Low",$lowWidth,$lowHeight);
 			} else {
-				$filegot = cvt($pic,$where,"Low",480,640);
+				$filegot = cvt($pic,$where,"Low",$lowHeight,$lowWidth);
 			}
 		}
 
@@ -486,8 +505,8 @@ if((!file_exists("$where"."Low") or ($pics != $vpic)) and $pics){
 
 $first = "";
 // if $flag is 1, print table of images
-$fontstuff = "size=-2 face=\"Arial\"";
-$titlestuff = "size=-1 face=\"Arial\"";
+$fontstuff = "size=\"$fontSize\" face=\"$fontFace\"";
+$titlestuff = "size=\"$imageTitleFontSize\" face=\"$fontFace\"";
 if($flag == 1 and $pics){
 	$count = 0;
 	print "<table border=0 cellspacing=5 cellpadding=3 align=center>\n<tr align=center>";
@@ -498,17 +517,23 @@ if($flag == 1 and $pics){
 		}
 		$lpic = preg_replace("/ /","%20",$pic);
 		if($first == "") $first = "$rwhere/Low/$lpic";
+		$mxSize=0;
+		if($thumbWidth > $thumbHeight){
+			$mxSize = $thumbWidth;
+		} else {
+			$mxSize = $thumbHeight;
+		}
 		if(stristr($pic,".gif")){
 			$pn = $pic;
 			$pn .= '.jpg';
 			$lpn = preg_replace("/ /","%20",$pn);
-			print "<td bgcolor=\"#222222\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=$rwhere/Low/$lpn\">";
+			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=$rwhere/Low/$lpn\">";
 			$size = getimagesize("$where/tn/"."$pn");
-			if ($size[0] > 240 or $size[1] > 240){
+			if ($size[0] > $mxSize or $size[1] > $mxSize){
 				if($size[0] > $size[1]){
-					print "<img border=0 src=\"$rwhere/tn/$lpn\" width=200 height=150><br>";
+					print "<img border=0 src=\"$rwhere/tn/$lpn\" width=$thumbWidth height=$thumbHeight><br>";
 				} else {
-					print "<img border=0 src=\"$rwhere/tn/$lpn\" width=150 height=200><br>";
+					print "<img border=0 src=\"$rwhere/tn/$lpn\" width=$thumbHeight height=$thumbWidth><br>";
 				}
 			} else {
 				print "<img border=0 src=\"$rwhere/tn/$lpn\"><br>";
@@ -516,13 +541,13 @@ if($flag == 1 and $pics){
 			print "</a><a href=\"$PHP_SELF?mode=single&img=$rwhere/$lpic\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=$rwhere/Low/$lpn\"><font $fontstuff>Low Quality</font></a></td>\n";
 
 		} else {
-			print "<td bgcolor=\"#222222\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=$rwhere/Low/$lpic\">";
+			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=$rwhere/Low/$lpic\">";
 			$size = getimagesize("$where/tn/"."$pic");
-			if ($size[0] > 240 or $size[1] > 240){
+			if ($size[0] > $mxSize or $size[1] > $mxSize){
 				if($size[0] > $size[1]){
-					print "<img border=0 src=\"$rwhere/tn/$lpic\" width=200 height=150><br>";
+					print "<img border=0 src=\"$rwhere/tn/$lpic\" width=$thumbWidth height=$thumbHeight><br>";
 				} else {
-					print "<img border=0 src=\"$rwhere/tn/$lpic\" width=150 height=200><br>";
+					print "<img border=0 src=\"$rwhere/tn/$lpic\" width=$thumbHeight height=$thumbWidth><br>";
 				}
 			} else {
 				print "<img border=0 src=\"$rwhere/tn/$lpic\"><br>";
@@ -535,7 +560,7 @@ if($flag == 1 and $pics){
 
 	//print "first is $first\n";
 	$img = $first;
-	$fontstuff="<font face=\"Verdana\">";
+	$fontstuff="<font face=\"$fontFace\">";
 	print "<table border=0 align=center>";
 	print "<tr><td colspan=3 align=center>$fontstuff";
 	print "Auto Slideshow<br>";
@@ -564,7 +589,7 @@ if($han = opendir("$where")){
 }
 array_shift($files);
 
-print "<table border=0 bgcolor=\"#222222\" align=center><tr>\n";
+print "<table border=0 bgcolor=\"$tdBgcolor\" align=center><tr>\n";
 $count = 0;
 foreach($files as $file){
 	if(ereg("url",$file)){
@@ -577,7 +602,7 @@ foreach($files as $file){
 		fclose($fh);
 		$ft="<font size=-1 face=\"Verdana\">";
 		$sf="</font>";
-		print "<td bgcolor=\"#333333\">$ft"."URL:$sf</td><td bgcolor=\"#333333\">$ft<a href=\"$furl\">$name</a>$sf</td></tr><tr>\n";
+		print "<td bgcolor=\"$tdBgcolor2\">$ft"."URL:$sf</td><td bgcolor=\"$tdBgcolor2\">$ft<a href=\"$furl\">$name</a>$sf</td></tr><tr>\n";
 	} else {
 		$stat = stat("$where/$file");
 		$bytes = $stat[7];
@@ -592,7 +617,7 @@ foreach($files as $file){
 		} else {
 			$size = $bytes."B";
 		}
-		print "<td bgcolor=\"#333333\"><a href=\"$relative/$add/$file\">$file</a></td><td>$size</td>";
+		print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/$add/$file\">$file</a></td><td>$size</td>";
 		print "</tr><tr>\n";
 	}
 }
@@ -600,19 +625,8 @@ print "</tr></table><br>\n";
 
 ?>
 
-<table border=0 align=center bgcolor=#222222 cellspacing=3>
+<table border=0 align=center bgcolor="<?echo $tdBgcolor?>" cellspacing=3>
 <?php
-
-/*
-$dir = `find $where -type d -maxdepth 1`;
-$dir = substr($dir,0,-1); // chomp
-$dirs = split("\n",$dir);
-array_shift($dirs);
-
-$dirs = deprefix($dirs,$where);
-
-$dirs = array_filter_it($dirs,"junker");
-*/
 
 $dirs = array ("");
 if($han = opendir("$where")){
@@ -634,15 +648,15 @@ foreach ($dirs as $dir){
 		$link = "$PHP_SELF?viewdate=yes&where=$add/$ldir";
 		print "<tr><td>";
 		genpreview("$where/$dir","$ldir",$add,$link);
-		print "</td><td bgcolor=\"#333333\"><font face=\"Verdana\">";
+		print "</td><td bgcolor=\"$tdBgcolor2\"><font face=\"$fontFace\">";
 		print "<a href=\"$link\">$dir</a>";
 		print "</font></td>";
-		print "<td bgcolor=\"#333333\"><font face=\"Verdana\">$date</font></td></tr>\n";
+		print "<td bgcolor=\"$tdBgcolor2\"><font face=\"$fontFace\">$date</font></td></tr>\n";
 	} else {
 		$link = "$PHP_SELF?where=$add/$ldir";
 		print "<tr><td>";
 		genpreview("$where/$dir","$ldir",$add,$link);
-		print "</td><td bgcolor=\"#333333\"><font face=\"Verdana\">";
+		print "</td><td bgcolor=\"$tdBgcolor2\"><font face=\"$fontFace\">";
 		print "<a href=\"$link\">$dir</a>";
 		print "</font></td>";
 		print "</tr>\n";
@@ -653,9 +667,9 @@ foreach ($dirs as $dir){
 <?php
 if($dirs){
 	if($viewdate){
-		print "<center><a href=\"$PHP_SELF?where=$add\"><font face=\"Verdana\">hide dates</font></a><br></center>\n";
+		print "<center><a href=\"$PHP_SELF?where=$add\"><font face=\"$fontFace\">hide dates</font></a><br></center>\n";
 	} else {
-		print "<center><a href=\"$PHP_SELF?viewdate=yes&where=$add\"><font face=\"Verdana\">view dates</font></a><br></center>\n";
+		print "<center><a href=\"$PHP_SELF?viewdate=yes&where=$add\"><font face=\"$fontFace\">view dates</font></a><br></center>\n";
 	}
 }
 ?>
