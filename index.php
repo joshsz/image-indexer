@@ -72,30 +72,48 @@ $cmpfunc = "jdircmp";
 // for calendar mode, you have to use jdircmp and name dirs in the form "MM-DD-YYYY (Description)"
 $dirDisplayMode = "calendar";
 
+// Standard Display Mode Colors
+// background color of the site
 $bgcolor = "#333333";
+// general text color
 $textColor = "#FFFFFF";
+// unvisited link color
 $linkColor = "#ccaaaa";
+// active link color
 $alinkColor = "#eecccc";
+// visited link color
 $vlinkColor = "#aa8888";
+// 'outer' table color
 $tdBgcolor = "#222222";
+// 'inner' table color
 $tdBgcolor2 = "#333333";
+// text color of the footer (copyright info etc)
 $footTextColor = "#888888";
 
+// general font face
 $fontFace = "Verdana, Arial, Helvetica, sans-serif";
+// general font size
 $fontSize = "-2";
+// title font size
 $titleFontSize = "+2";
+// image title font size
 $imageTitleFontSize = "-1";
 
+//dimentions for thumbnails
 $thumbWidth = 120;
 $thumbHeight = 90;
+// dimentions for low-quality images
 $lowWidth = 640;
 $lowHeight = 480;
+// dimentions for directory previews
 $pv_thumbWidth = 100;
 $pv_thumbHeight = 75;
 
+//Calendar Mode Color Definitions
 $Calendar_borderTable_borderColor="#CCCCCC";
 $Calendar_dates_fontColor="#FFFFFF";
 $Calendar_link_fontColor="#FFCC99";
+
 //this is the line that's shown at the top of each page
 $titleLine = "<p><center><font size=\"$titleFontSize\" face=\"$fontFace\">Camera Pictures</font></center></p>";
 
