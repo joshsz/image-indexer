@@ -251,7 +251,7 @@ function genpreview($dir,$reldir,$add,$link){
 			$size = @getimagesize($source);
 			if($size && $size[1] > $size[0]){
 				print "vertical thumbnail\n<br>";
-				$cmd = "$convert -resize $pv_thumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
+				$cmd = "$convert -resize $pv_thumbHeight"."x"."$pv_thumbWidth \"$source\" \"$dir/pv_thumb.jpg\"";
 			}
 			`$cmd`;
 			$cmd = "chmod a+rwx \"$dir/pv_thumb.jpg\"";
