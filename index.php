@@ -245,6 +245,7 @@ function deprefix($array,$where){
 
 function cvt($filename,$dir,$dest,$x,$y) {
 	global $convert;
+	if(!is_writable($dir."/".$dest)){ print "can't create thumbnails, $dir/$dest is not writable<br>\n"; exit(0); }
         $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename\"";
 	#$STUFF = `echo `;
  
@@ -534,6 +535,7 @@ if(file_exists("$where"."Low/index.lst")){
 
 // check for thumbs
 if((!file_exists("$where"."tn") or ($pics != $upic)) and $pics){
+	if(!is_writable($where)){ print "can't create thumbnails, $where is not writable<br>\n"; exit(0); }
 	$flag = 0;
 	if(!file_exists("$where"."doingthumbs")){
 		touch("$where"."doingthumbs");
@@ -573,6 +575,7 @@ if((!file_exists("$where"."tn") or ($pics != $upic)) and $pics){
 
 // check for lows
 if((!file_exists("$where"."Low") or ($pics != $vpic)) and $pics){
+	if(!is_writable($where)){ print "can't create thumbnails, $where is not writable<br>\n"; exit(0); }
 	$flag = 0;
 	if(!file_exists("$where"."doinglows")){
 		touch("$where"."doinglows");
