@@ -712,9 +712,9 @@ foreach ($dirs as $dir){
 <?php
 if($dirs){
 	if($viewdate){
-		print "<tr><td><a href=\"$PHP_SELF?where=".rawurlencode($add)."\"><font face=\"$fontFace\">hide dates</font></a><br></td></tr>\n";
+		print "<tr><td align=center><a href=\"$PHP_SELF?where=".rawurlencode($add)."\"><font face=\"$fontFace\">hide dates</font></a><br></td></tr>\n";
 	} else {
-		print "<tr><td><a href=\"$PHP_SELF?viewdate=yes&where=".rawurlencode($add)."\"><font face=\"$fontFace\">view dates</font></a><br></td></tr>\n";
+		print "<tr><td align=center><a href=\"$PHP_SELF?viewdate=yes&where=".rawurlencode($add)."\"><font face=\"$fontFace\">view dates</font></a><br></td></tr>\n";
 	}
 }
 ?>
