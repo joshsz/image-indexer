@@ -212,6 +212,7 @@ function cvt($filename,$dir,$dest,$x,$y) {
  
 	if(stristr($filename,".jpg") or stristr($filename,".png")){
                 `$cmd`;
+		chmod("$dir/$dest/$filename",0777);
                 return $filename;
         } else if (stristr($filename,".gif")){
                 $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename.jpg\"";
@@ -220,6 +221,7 @@ function cvt($filename,$dir,$dest,$x,$y) {
                 `rm -f $dir/$dest/$filename.jpg.*`;
                 $cmd = "$convert -resize $x".'x'."$y \"$dir/$dest/$filename.jpg\" \"$dir/$dest/$filename.jpg\"";
                 `$cmd`;
+		chmod("$dir/$dest/$filename.jpg",0777);
                 return "$filename.jpg";
 }	}
 
