@@ -460,12 +460,12 @@ if($mode == "single"){
 	print ">\n";
 	print "</td></tr>";
 	print "<tr><td align=center>$fontstuff";
-	print "<a href=\"$plink\">Prev</a> </font>";
+	print "<a href=\"$plink\" accesskey=\"p\">Prev</a> </font>";
 	print "</td><td align=center>$fontstuff";
 	//print "<A HREF=\"javascript:history.go(-1)\">Back</a>\n";
-	print "<a href=\"$backlink\">Back</a></font>\n";
+	print "<a href=\"$backlink\" accesskey=\"b\">Back</a></font>\n";
 	print "</td><td align=center>$fontstuff";
-	print " <a href=\"$nlink\">Next</a> </font>";
+	print " <a href=\"$nlink\" accesskey=\"n\">Next</a> </font>";
 	print "</td></tr>";
         print "<tr><td colspan=3 align=center>$fontstuff".($idx+1)." / ".($size+1)." </font></td></tr>";
 	if($auto == "true"){
