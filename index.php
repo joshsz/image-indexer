@@ -365,11 +365,11 @@ if($mode == "single"){
 		print "<tr><td colspan=3 align=center>$fontstuff";
 		print "Auto Slideshow<br>";
 		print "Seconds Delay: ";
-		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=1\">1</a> ";
-		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=2\">2</a> ";
-		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=3\">3</a> ";
-		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=4\">4</a> ";
-		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=5\">5</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=1\">1</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=2\">2</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=3\">3</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=4\">4</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=5\">5</a> ";
 		print "</font></td></tr>";
 	}
 	print "</table>";
@@ -572,11 +572,11 @@ if($flag == 1 and $pics){
 	print "<tr><td colspan=3 align=center>$fontstuff";
 	print "Auto Slideshow<br>";
 	print "Seconds Delay: ";
-	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=1\">1</a> ";
-	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=2\">2</a> ";
-	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=3\">3</a> ";
-	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=4\">4</a> ";
-	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=5\">5</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=1\">1</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=2\">2</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=3\">3</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=4\">4</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=5\">5</a> ";
 	print "</font></td></tr>";
 	print "</table>";
 }
