@@ -431,7 +431,7 @@ if(file_exists($where."/description.txt")){
         fclose($fh);
 	print "<tr><td align=center>";
 	print preg_replace("/\n/","<br>\n",$data);
-	print "</td></tr>>";
+	print "</td></tr>";
 }
 
 
