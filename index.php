@@ -86,8 +86,8 @@ $thumbWidth = 120;
 $thumbHeight = 90;
 $lowWidth = 640;
 $lowHeight = 480;
-$PVthumbWidth = 100;
-$PVthumbHeight = 75;
+$pv_thumbWidth = 100;
+$pv_thumbHeight = 75;
 ####################################################################
 #### CONFIGURATION ENDS HERE #######################################
 ####################################################################
@@ -221,7 +221,7 @@ function cvt($filename,$dir,$dest,$x,$y) {
 }	}
 
 function genpreview($dir,$reldir,$add,$link){
-	global $convert,$relative;
+	global $convert,$relative,$pv_thumbWidth,$pv_thumbHeight;
 	$source = "";
 	#print "checking $dir/preview.jpg\n<br>";
 	if(file_exists("$dir/preview.jpg")){
@@ -243,7 +243,7 @@ function genpreview($dir,$reldir,$add,$link){
 	}
 	if($source != ""){
 		if(!file_exists("$dir/pv_thumb.jpg") or (filectime($source) > filectime("$dir/pv_thumb.jpg"))){
-			$cmd = "$convert -resize $PVthumbWidth"."x"."$PVthumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
+			$cmd = "$convert -resize $pv_thumbWidth"."x"."$pv_thumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
 			`$cmd`;
 			$cmd = "chmod a+rwx \"$dir/pv_thumb.jpg\"";
 			`$cmd`;
@@ -251,9 +251,9 @@ function genpreview($dir,$reldir,$add,$link){
 		if(file_exists("$dir/pv_thumb.jpg")){
 			print "<a href=\"$link\">";
 			if($add != ""){
-				print "<img border=0 width=\"$PVthumbWidth\" height=\"$PVthumbHeight\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
+				print "<img border=0 width=\"$pv_thumbWidth\" height=\"$pv_thumbHeight\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
 			} else {
-				print "<img border=0 width=\"$PVthumbWidth\" height=\"$PVthumbHeight\" src=\"$reldir/pv_thumb.jpg\">";
+				print "<img border=0 width=\"$pv_thumbHeight\" height=\"$pv_thumbWidth\" src=\"$reldir/pv_thumb.jpg\">";
 			}
 			print "</a>";
 		}
