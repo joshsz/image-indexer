@@ -354,7 +354,6 @@ if($mode == "single"){
 	}
 	$dir = join("/",$parts);
 	$dir = preg_replace("/\\\\/","",$dir);
-	$dir="/$dir";
 	$origdir = preg_replace("/\\\\/","",$origdir);
 
 	$wpts = preg_split("/\//",$dir);
@@ -362,6 +361,7 @@ if($mode == "single"){
 		array_pop($wpts);
 	}
 	$wheredir = join("/",$wpts);
+	$dir="/$dir";
 
 	$tfl = preg_replace("/\\\\/","",$file);
 	$timg = preg_replace("/\\\\/","",$img);
@@ -393,6 +393,7 @@ if($mode == "single"){
 	crumnav($wheredir,$tfl);
 	print "<tr><td><table align=center border=0>";
 	print "<tr><td colspan=3 align=center>";
+	$tfl=preg_replace("/%20/"," ",$tfl);
 	$imsz = getimagesize($prefix.$dir."/".$tfl);
 	$w = $imsz[0];
 	$h = $imsz[1];
