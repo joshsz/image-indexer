@@ -631,7 +631,7 @@ print "</tr></table><br>\n";
 $dirs = array ("");
 if($han = opendir("$where")){
 	while( false !== ($file = readdir($han))){
-		if((filetype($where.$file) == "dir") and $file != "Low" and $file != "tn" and $file != "." and $file != "..") array_push($dirs,$file);
+		if((filetype($where.$file) == "dir") and $file != "Low" and $file != "tn" and $file != "." and $file != ".." and $file != "CVS") array_push($dirs,$file);
 	}
 }
 array_shift($dirs);
