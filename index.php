@@ -69,6 +69,7 @@ $convert = '/usr/bin/convert';
 $cmpfunc = "jdircmp";
 
 // standard or calendar (coming soon!)
+// for calendar mode, you have to use jdircmp and name dirs in the form "MM-DD-YYYY (Description)"
 $dirDisplayMode = "calendar";
 
 $bgcolor = "#333333";
@@ -92,8 +93,19 @@ $lowHeight = 480;
 $pv_thumbWidth = 100;
 $pv_thumbHeight = 75;
 
+$Calendar_borderTable_borderColor="#CCCCCC";
+$Calendar_dates_fontColor="#FFFFFF";
+$Calendar_link_fontColor="#FFCC99";
 //this is the line that's shown at the top of each page
 $titleLine = "<p><center><font size=\"$titleFontSize\" face=\"$fontFace\">Camera Pictures</font></center></p>";
+
+#########################################################################
+#### ADVANCED CONFIG: only edit this if you know what you're doing! #####
+#########################################################################
+$Calendar_borderTable=".bordertable {  border: $Calendar_borderTable_borderColor; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px}";
+$Calendar_dates=".dates {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; color: $Calendar_dates_fontColor}";
+$Calendar_link=".link {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; color: $Calendar_link_fontColor; text-decoration: none}";
+$Styles="$Calendar_borderTable\n$Calendar_dates\n$Calendar_link";
 
 ####################################################################
 #### CONFIGURATION ENDS HERE #######################################
@@ -352,9 +364,7 @@ function runc($tx){
 <html>
 <head>
 <style>
-.bordertable {  border: #CCCCCC; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px}
-.dates {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; color: #FFFFFF}
-.link {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; color: #FFCC99; text-decoration: none}
+<?echo $Styles?>
 </style>
 <title>Pictures at <? echo $site_name ?>
 <?php
@@ -767,7 +777,7 @@ if($dirDisplayMode == "standard"){
 				$stuff = split("\(",$dir);
 	                	$desc = substr($stuff[1],0,-1);
 				$sdesc = $desc;
-				$mxlen=10;
+				$mxlen=20;
 				if(strlen($desc) > $mxlen){
 					$sdesc = substr($desc,0,$mxlen)."...";
 				}
@@ -786,17 +796,22 @@ if($dirDisplayMode == "standard"){
 						//draw begin borders only
 						?>
 </td></tr></table>
- <table width="50%" border="0" class="bordertable" align="center">
+ <table width="625" border="0" class="bordertable" align="center">
   <tr valign="top"> 
    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><?echo $vmon." ".$year?></font></td>
   </tr>
-  <tr valign="top"> 
-   <td height="121"> 
+  <tr valign="top">
+   <td>
     <table width="100%" border="0">
      <tr valign="top">
 <?
 					} else {
 						//draw table end/begin borders
+		if($ct<4){
+			for($i=0;$i<(5-$ct);$i++){
+				print "<td width=\"20%\" height=\"89\">&nbsp;</td>\n";
+			}
+		}
 ?>
      </tr>
     </table>
@@ -804,12 +819,12 @@ if($dirDisplayMode == "standard"){
   </tr>
  </table>
 <br>
- <table width="50%" border="0" class="bordertable" align="center">
+ <table width="625" border="0" class="bordertable" align="center">
   <tr valign="top">
    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><?echo $vmon." ".$year?></font></td>
   </tr>
   <tr valign="top">
-   <td height="121">
+   <td>
     <table width="100%" border="0">
      <tr valign="top">
 <?
@@ -818,16 +833,21 @@ if($dirDisplayMode == "standard"){
 					$ct=0;
 				}
                         	$link = "$PHP_SELF?where=$add/$ldir";
-            			print "<td height=\"89\"><a href=\"$link\" title=\"$desc\">";
+            			print "<td width=\"20%\" height=\"89\"><div align=\"center\"><a href=\"$link\" title=\"$desc\">";
 				genpreview("$where/$dir","$ldir",$add,$link,1);
 				print "</a><br>";
 				print "<font class=\"dates\">$mon-$day :<font color=\"#FFCC99\"><a href=\"$link\" title=\"$desc\" style=\"text-decoration: none\"><span class=\"link\"> $sdesc</span></a></font></font>\n";
-				print "</td>\n";
+				print "</div></td>\n";
 				$ct++;
 				if($ct>4){
 					print "</tr><tr valign=\"top\">\n";
 					$ct=0;
 				}
+			}
+		}
+		if($ct<4){
+			for($i=0;$i<(5-$ct);$i++){
+				print "<td width=\"20%\" height=\"89\">&nbsp;</td>\n";
 			}
 		}
 ?>
