@@ -127,7 +127,7 @@ function badcheck($str){
 }
 
 function checkfiletypes($file){
-	$filetypes = array ("wpd", "txt", "avi", "rm", "mpg", "mpeg", "url");
+	$filetypes = array ("wpd", "txt", "avi", "rm", "mpg", "mpeg", "url", "mov", "wmv");
 
 	foreach($filetypes as $type){
 		if(stristr($file,".$type") and !(stristr($file,"description.txt"))){
