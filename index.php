@@ -360,7 +360,7 @@ if($mode == "single"){
 	print "</td></tr>";
         print "<tr><td colspan=3 align=center>$fontstuff".($idx+1)." / ".($size+1)." </font></td></tr>";
 	if($auto == "true"){
-		print "<tr><td colspan=3 align=center>$fontstuff<a href=\"$PHP_SELF?mode=single&img=$img&auto=false\">Turn Auto Off</a></font></td></tr>";
+		print "<tr><td colspan=3 align=center>$fontstuff<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=false\">Turn Auto Off</a></font></td></tr>";
 	} else {
 		print "<tr><td colspan=3 align=center>$fontstuff";
 		print "Auto Slideshow<br>";
