@@ -293,7 +293,7 @@ function crumnav($add,$imnm){
 		array_push($oarr,"<td>$fsu/</font></td>");
 		$updir = join("/",$dpts);
 		if(strlen($updir) > 2){
-			$uplink = $PHP_SELF."?where=".rawurlencode($updir);
+			$uplink = $PHP_SELF."?where=".runc($updir);
 			if($viewdate) $uplink .= "&viewdate=yes";
 		} else {
 			$uplink = $PHP_SELF;
@@ -315,6 +315,12 @@ function crumnav($add,$imnm){
 		print "<td>$fsu/</font></td><td>$fsu"."$imnm</font></td>";
 	}
 	print "</tr></table></td><tr>\n";
+}
+
+function runc($tx){
+	$tx = rawurlencode($tx);
+	$tx = preg_replace("/\%2F/","/",$tx);
+	return $tx;
 }
 ?>
 <html>
@@ -361,14 +367,14 @@ if($mode == "single"){
 	if($prev < 0) $prev = $size;
 	$nfile = $pics[$next];
 	$pfile = $pics[$prev];
-	$nfile = rawurlencode($origdir."/".$nfile);
-	$pfile = rawurlencode($origdir."/".$pfile);
+	$nfile = runc($origdir."/".$nfile);
+	$pfile = runc($origdir."/".$pfile);
 	$nlink = "$PHP_SELF?mode=single&img=$nfile";
 	$plink = "$PHP_SELF?mode=single&img=$pfile";
 	print "</title>";
 	$autolink = $nlink."&auto=true&timer=$timer";
 	#$autolink = preg_replace("/ /","%20",$autolink);
-	#$backlink = $PHP_SELF."?where=".rawurlencode($wheredir);
+	#$backlink = $PHP_SELF."?where=".runc($wheredir);
 	if($auto == "true"){
 		print "<meta HTTP-EQUIV=\"Refresh\" Content=\"$timer;URL=$autolink\">";
 	}
@@ -398,16 +404,16 @@ if($mode == "single"){
 	print "</td></tr>";
         print "<tr><td colspan=3 align=center>$fontstuff".($idx+1)." / ".($size+1)." </font></td></tr>";
 	if($auto == "true"){
-		print "<tr><td colspan=3 align=center>$fontstuff<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=false\">Turn Auto Off</a></font></td></tr>";
+		print "<tr><td colspan=3 align=center>$fontstuff<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=false\">Turn Auto Off</a></font></td></tr>";
 	} else {
 		print "<tr><td colspan=3 align=center>$fontstuff";
 		print "Auto Slideshow<br>";
 		print "Seconds Delay: ";
-		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=1\">1</a> ";
-		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=2\">2</a> ";
-		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=3\">3</a> ";
-		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=4\">4</a> ";
-		print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=5\">5</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=1\">1</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=2\">2</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=3\">3</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=4\">4</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=5\">5</a> ";
 		print "</font></td></tr>";
 	}
 	print "</table></td></tr></table>";
@@ -562,7 +568,7 @@ if($flag == 1 and $pics){
 			$pn = $pic;
 			$pn .= '.jpg';
 			$lpn = preg_replace("/ /","%20",$pn);
-			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/Low/$lpn")."\">";
+			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpn")."\">";
 			$size = getimagesize("$where/tn/"."$pn");
 			if ($size[0] > $mxSize or $size[1] > $mxSize){
 				if($size[0] > $size[1]){
@@ -573,10 +579,10 @@ if($flag == 1 and $pics){
 			} else {
 				print "<img border=0 src=\"$rwhere/tn/$lpn\"><br>";
 			}
-			print "</a><a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/Low/$lpn")."\"><font $fontstuff>Low Quality</font></a></td>\n";
+			print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpn")."\"><font $fontstuff>Low Quality</font></a></td>\n";
 
 		} else {
-			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/Low/$lpic")."\">";
+			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\">";
 			$size = getimagesize("$where/tn/"."$pic");
 			if ($size[0] > $mxSize or $size[1] > $mxSize){
 				if($size[0] > $size[1]){
@@ -587,7 +593,7 @@ if($flag == 1 and $pics){
 			} else {
 				print "<img border=0 src=\"$rwhere/tn/$lpic\"><br>";
 			}
-			print "</a><a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/Low/$lpic")."\"><font $fontstuff>Low Quality</font></a></td>\n";
+			print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\"><font $fontstuff>Low Quality</font></a></td>\n";
 		}
 		$count++;
 	}
@@ -600,11 +606,11 @@ if($flag == 1 and $pics){
 	print "<tr><td colspan=3 align=center>$fontstuff";
 	print "Auto Slideshow<br>";
 	print "Seconds Delay: ";
-	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=1\">1</a> ";
-	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=2\">2</a> ";
-	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=3\">3</a> ";
-	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=4\">4</a> ";
-	print "<a href=\"$PHP_SELF?mode=single&img=".rawurlencode($img)."&auto=true&timer=5\">5</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=1\">1</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=2\">2</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=3\">3</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=4\">4</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=5\">5</a> ";
 	print "</font></td></tr>";
 	print "</table></td></tr>";
 }
@@ -656,12 +662,12 @@ foreach($files as $file){
 		array_pop($parts);
 		$fnm = join(".",$parts);
 
-		$madd=rawurlencode($add);
-		$madd=preg_replace("/%2F/","/",$madd);
+		$madd=runc($add);
+		#$madd=preg_replace("/%2F/","/",$madd);
 		if(file_exists("$where/$fnm.THM")){
-			print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/$madd/".rawurlencode($file)."\"><img border=\"0\" src=\"$relative/$madd/$fnm.THM\"></a></td>";
+			print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/$madd/".runc($file)."\"><img border=\"0\" src=\"$relative/$madd/$fnm.THM\"></a></td>";
 		} else { print "<td></td>"; }
-		print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/$madd/".rawurlencode($file)."\">$file</a></td><td>$size</td>";
+		print "<td bgcolor=\"$tdBgcolor2\"><a href=\"$relative/$madd/".runc($file)."\">$file</a></td><td>$size</td>";
 		print "</tr><tr>\n";
 	}
 }
@@ -684,7 +690,7 @@ array_shift($dirs);
 usort($dirs, $cmpfunc);
 
 foreach ($dirs as $dir){
-	$ldir = rawurlencode($dir);
+	$ldir = runc($dir);
 	if ($viewdate){
 		$stat = stat("$where/$dir");
 		$date = date("l, F dS, Y",$stat[9]);
@@ -713,9 +719,9 @@ foreach ($dirs as $dir){
 <?php
 if($dirs){
 	if($viewdate){
-		print "<tr><td align=center><a href=\"$PHP_SELF?where=".rawurlencode($add)."\"><font face=\"$fontFace\">hide dates</font></a><br></td></tr>\n";
+		print "<tr><td align=center><a href=\"$PHP_SELF?where=".runc($add)."\"><font face=\"$fontFace\">hide dates</font></a><br></td></tr>\n";
 	} else {
-		print "<tr><td align=center><a href=\"$PHP_SELF?viewdate=yes&where=".rawurlencode($add)."\"><font face=\"$fontFace\">view dates</font></a><br></td></tr>\n";
+		print "<tr><td align=center><a href=\"$PHP_SELF?viewdate=yes&where=".runc($add)."\"><font face=\"$fontFace\">view dates</font></a><br></td></tr>\n";
 	}
 }
 ?>
