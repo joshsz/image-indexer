@@ -138,7 +138,7 @@ ignore_user_abort(true);
 $footerLine="
 <center><img src=http://haven.loki.ws/artistic.gif></center><br>
 <center><font face=\"$fontFace\" color=\"$footTextColor\">This page best viewed with a recent browser.</font></center><br>
-<font size=-2 face=\"$fontFace\" color=\"$footTextColor\"><center>This php thing &copy; 2002 - 2004 <a href=\"mailto:php@loki.ws\">Joshua Szmajda</a> 2002</center></font>
+<font size=-2 face=\"$fontFace\" color=\"$footTextColor\"><center>This php thing &copy; <a href=\"mailto:php@loki.ws\">Joshua Szmajda</a> 2002 - 2004</center></font>
 <script language=javascript src=\"http://loki.ws/awstats_misc_tracker.js\"></script>
 </body></html>";
 // if we didn't get a path, use the default one of just the prefix
