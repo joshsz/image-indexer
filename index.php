@@ -135,6 +135,7 @@ function checkfiletypes($file){
 }
 
 function dircmp($a, $b){
+	global $where;
 	$astat = stat("$where"."$a");
 	$bstat = stat("$where"."$b");
 
