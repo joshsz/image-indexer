@@ -392,7 +392,7 @@ if($mode == "single"){
 	crumnav($wheredir,$tfl);
 	print "<tr><td><table align=center border=0>";
 	print "<tr><td colspan=3 align=center>";
-	$imsz = getimagesize($prefix.$dir."/".$tfl);
+	$imsz = getimagesize($prefix."/".$dir."/".$tfl);
 	$w = $imsz[0];
 	$h = $imsz[1];
 	$fontstuff = "<font face=\"$fontFace\">";
