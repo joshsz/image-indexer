@@ -246,7 +246,12 @@ function genpreview($dir,$reldir,$add,$link){
 	}
 	if($source != ""){
 		if(!file_exists("$dir/pv_thumb.jpg") or (filectime($source) > filectime("$dir/pv_thumb.jpg"))){
+			# here is where to check
 			$cmd = "$convert -resize $pv_thumbWidth"."x"."$pv_thumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
+			$size = getimagesize($source);
+			if($size[1] > $size[0]){
+				$cmd = "$convert -resize $pv_thumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
+			}
 			`$cmd`;
 			$cmd = "chmod a+rwx \"$dir/pv_thumb.jpg\"";
 			`$cmd`;
