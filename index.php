@@ -303,6 +303,7 @@ if($mode == "single"){
 		array_shift($parts);
 	}
 	$dir = join("/",$parts);
+	$dir = preg_replace("/\\\\/","",$dir);
 
 	$wpts = preg_split("/\//",$dir);
 	if(ereg("Low",$wpts[count($wpts) - 1])){
