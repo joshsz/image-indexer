@@ -364,6 +364,7 @@ if($mode == "single"){
 	$dir="/$dir";
 
 	$tfl = preg_replace("/\\\\/","",$file);
+	$tfl=preg_replace("/%20/"," ",$tfl);
 	$timg = preg_replace("/\\\\/","",$img);
 	$pics = getPixArray($prefix.$dir);
 	$idx = array_search($tfl,$pics);
@@ -393,7 +394,6 @@ if($mode == "single"){
 	crumnav($wheredir,$tfl);
 	print "<tr><td><table align=center border=0>";
 	print "<tr><td colspan=3 align=center>";
-	$tfl=preg_replace("/%20/"," ",$tfl);
 	$imsz = getimagesize($prefix.$dir."/".$tfl);
 	$w = $imsz[0];
 	$h = $imsz[1];
