@@ -653,7 +653,7 @@ array_shift($dirs);
 usort($dirs, $cmpfunc);
 
 foreach ($dirs as $dir){
-	$ldir = preg_replace("/ /","%20",$dir);
+	$ldir = rawurlencode($dir);
 	if ($viewdate){
 		$stat = stat("$where/$dir");
 		$date = date("l, F dS, Y",$stat[9]);
