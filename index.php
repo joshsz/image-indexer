@@ -252,7 +252,7 @@ function genpreview($dir,$reldir,$add,$link){
 			`$cmd`;
 		}
 		if(file_exists("$dir/pv_thumb.jpg")){
-			print "<a href=\"".rawurlencode($link)."\">";
+			print "<a href=\"$link\">";
 			if($add != ""){
 				print "<img border=0 width=\"$pv_thumbWidth\" height=\"$pv_thumbHeight\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
 			} else {
@@ -325,21 +325,21 @@ if($mode == "single"){
 	if($prev < 0) $prev = $size;
 	$nfile = $pics[$next];
 	$pfile = $pics[$prev];
-	$nfile = $origdir."/".$nfile;
-	$pfile = $origdir."/".$pfile;
+	$nfile = rawurlencode($origdir."/".$nfile);
+	$pfile = rawurlencode($origdir."/".$pfile);
 	$nlink = "$PHP_SELF?mode=single&img=$nfile";
 	$plink = "$PHP_SELF?mode=single&img=$pfile";
 	print "</title>";
 	$autolink = $nlink."&auto=true&timer=$timer";
 	$autolink = preg_replace("/ /","%20",$autolink);
-	$backlink = $PHP_SELF."?where=$wheredir";
+	$backlink = $PHP_SELF."?where=".rawurlencode($wheredir);
 	if($auto == "true"){
 		print "<meta HTTP-EQUIV=\"Refresh\" Content=\"$timer;URL=$autolink\">";
 	}
 	print "</head>";
 	print "<body bgcolor=\"$bgcolor\" text=\"$textColor\" link=\"$linkColor\" alink=\"$alinkColor\" vlink=\"$vlinkColor\">";
 	print $titleLine;
-	print "<center><font size=\"$fontSize\" face=\"$fontFace\"><a href=\"".rawurlencode($backlink)."\">Back</a></font></center><br>\n";
+	print "<center><font size=\"$fontSize\" face=\"$fontFace\"><a href=\"$backlink\">Back</a></font></center><br>\n";
 	print "<table align=center border=0>";
 	print "<tr><td colspan=3 align=center>";
 	$imsz = getimagesize($prefix.$dir."/".$tfl);
@@ -351,25 +351,25 @@ if($mode == "single"){
 	print ">\n";
 	print "</td></tr>";
 	print "<tr><td align=center>$fontstuff";
-	print "<a href=\"".rawurlencode($plink)."\">Prev</a> </font>";
+	print "<a href=\"$plink\">Prev</a> </font>";
 	print "</td><td align=center>$fontstuff";
 	//print "<A HREF=\"javascript:history.go(-1)\">Back</a>\n";
-	print "<a href=\"".rawurlencode($backlink)."\">Back</a></font>\n";
+	print "<a href=\"$backlink\">Back</a></font>\n";
 	print "</td><td align=center>$fontstuff";
-	print " <a href=\"".rawurlencode($nlink)."\">Next</a> </font>";
+	print " <a href=\"$nlink\">Next</a> </font>";
 	print "</td></tr>";
         print "<tr><td colspan=3 align=center>$fontstuff".($idx+1)." / ".($size+1)." </font></td></tr>";
 	if($auto == "true"){
-		print "<tr><td colspan=3 align=center>$fontstuff<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=false")."\">Turn Auto Off</a></font></td></tr>";
+		print "<tr><td colspan=3 align=center>$fontstuff<a href=\"$PHP_SELF?mode=single&img=$img&auto=false\">Turn Auto Off</a></font></td></tr>";
 	} else {
 		print "<tr><td colspan=3 align=center>$fontstuff";
 		print "Auto Slideshow<br>";
 		print "Seconds Delay: ";
-		print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=1")."\">1</a> ";
-		print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=2")."\">2</a> ";
-		print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=3")."\">3</a> ";
-		print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=4")."\">4</a> ";
-		print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=5")."\">5</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=1\">1</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=2\">2</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=3\">3</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=4\">4</a> ";
+		print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=5\">5</a> ";
 		print "</font></td></tr>";
 	}
 	print "</table>";
@@ -388,13 +388,13 @@ array_pop($dpts);
 //array_pop($dpts);
 $updir = join("/",$dpts);
 if(strlen($updir) > 2){
-	$uplink = $PHP_SELF."?where=".$updir;
+	$uplink = $PHP_SELF."?where=".rawurlencode($updir);
 	if($viewdate) $uplink .= "&viewdate=yes";
 } else {
 	$uplink = $PHP_SELF;
 	if($viewdate) $uplink .= "?viewdate=$viewdate";
 }
-?><center><font size="<?echo $fontSize?>" face="<?echo $fontFace?>"><a href="<?echo rawurlencode($uplink)?>">up one directory</a></font></center><?php
+?><center><font size="<?echo $fontSize?>" face="<?echo $fontFace?>"><a href="<?echo $uplink?>">up one directory</a></font></center><?php
 }
 
 if(file_exists($where."/description.txt")){
@@ -534,7 +534,7 @@ if($flag == 1 and $pics){
 			$pn = $pic;
 			$pn .= '.jpg';
 			$lpn = preg_replace("/ /","%20",$pn);
-			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$rwhere/Low/$lpn")."\">";
+			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/Low/$lpn")."\">";
 			$size = getimagesize("$where/tn/"."$pn");
 			if ($size[0] > $mxSize or $size[1] > $mxSize){
 				if($size[0] > $size[1]){
@@ -545,10 +545,10 @@ if($flag == 1 and $pics){
 			} else {
 				print "<img border=0 src=\"$rwhere/tn/$lpn\"><br>";
 			}
-			print "</a><a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$rwhere/Low/$lpn")."\"><font $fontstuff>Low Quality</font></a></td>\n";
+			print "</a><a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/Low/$lpn")."\"><font $fontstuff>Low Quality</font></a></td>\n";
 
 		} else {
-			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$rwhere/Low/$lpic")."\">";
+			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/Low/$lpic")."\">";
 			$size = getimagesize("$where/tn/"."$pic");
 			if ($size[0] > $mxSize or $size[1] > $mxSize){
 				if($size[0] > $size[1]){
@@ -559,7 +559,7 @@ if($flag == 1 and $pics){
 			} else {
 				print "<img border=0 src=\"$rwhere/tn/$lpic\"><br>";
 			}
-			print "</a><a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$rwhere/Low/$lpic")."\"><font $fontstuff>Low Quality</font></a></td>\n";
+			print "</a><a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".rawurlencode("$rwhere/Low/$lpic")."\"><font $fontstuff>Low Quality</font></a></td>\n";
 		}
 		$count++;
 	}
@@ -572,11 +572,11 @@ if($flag == 1 and $pics){
 	print "<tr><td colspan=3 align=center>$fontstuff";
 	print "Auto Slideshow<br>";
 	print "Seconds Delay: ";
-	print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=1")."\">1</a> ";
-	print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=2")."\">2</a> ";
-	print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=3")."\">3</a> ";
-	print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=4")."\">4</a> ";
-	print "<a href=\"".rawurlencode("$PHP_SELF?mode=single&img=$img&auto=true&timer=5")."\">5</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=1\">1</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=2\">2</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=3\">3</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=4\">4</a> ";
+	print "<a href=\"$PHP_SELF?mode=single&img=$img&auto=true&timer=5\">5</a> ";
 	print "</font></td></tr>";
 	print "</table>";
 }
@@ -609,7 +609,7 @@ foreach($files as $file){
 		fclose($fh);
 		$ft="<font size=-1 face=\"Verdana\">";
 		$sf="</font>";
-		print "<td bgcolor=\"$tdBgcolor2\">$ft"."URL:$sf</td><td bgcolor=\"$tdBgcolor2\">$ft<a href=\"".rawurlencode($furl)."\">$name</a>$sf</td></tr><tr>\n";
+		print "<td bgcolor=\"$tdBgcolor2\">$ft"."URL:$sf</td><td bgcolor=\"$tdBgcolor2\">$ft<a href=\"$furl\">$name</a>$sf</td></tr><tr>\n";
 	} else {
 		$stat = stat("$where/$file");
 		$bytes = $stat[7];
@@ -681,9 +681,9 @@ foreach ($dirs as $dir){
 <?php
 if($dirs){
 	if($viewdate){
-		print "<center><a href=\"".rawurlencode("$PHP_SELF?where=$add")."\"><font face=\"$fontFace\">hide dates</font></a><br></center>\n";
+		print "<center><a href=\"$PHP_SELF?where=".rawurlencode($add)."\"><font face=\"$fontFace\">hide dates</font></a><br></center>\n";
 	} else {
-		print "<center><a href=\"".rawurlencode("$PHP_SELF?viewdate=yes&where=$add")."\"><font face=\"$fontFace\">view dates</font></a><br></center>\n";
+		print "<center><a href=\"$PHP_SELF?viewdate=yes&where=".rawurlencode($add)."\"><font face=\"$fontFace\">view dates</font></a><br></center>\n";
 	}
 }
 ?>
