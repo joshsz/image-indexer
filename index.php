@@ -1,6 +1,6 @@
 <?php
 /*
-This is version 1.6 of Josh's indexer!
+This is version 1.7 of Josh's indexer!
 (C) 2003 Joshua Szmajda (php@loki.ws)
 You're free to use and distribute this program, as long
 as you send any code changes to me, and don't sell it
