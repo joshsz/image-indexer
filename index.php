@@ -374,7 +374,7 @@ if($mode == "single"){
 	print "</title>";
 	$autolink = $nlink."&auto=true&timer=$timer";
 	#$autolink = preg_replace("/ /","%20",$autolink);
-	#$backlink = $PHP_SELF."?where=".runc($wheredir);
+	$backlink = $PHP_SELF."?where=".runc($wheredir);
 	if($auto == "true"){
 		print "<meta HTTP-EQUIV=\"Refresh\" Content=\"$timer;URL=$autolink\">";
 	}
