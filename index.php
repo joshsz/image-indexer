@@ -850,6 +850,10 @@ if($dirDisplayMode == "standard"){
 					$lmon=$mon;
 					$ct=0;
 				}
+				if($ct>4){
+					print "</tr><tr valign=\"top\">\n";
+					$ct=0;
+				}
                         	$link = "$PHP_SELF?where=$add/$ldir";
             			print "<td width=\"20%\" height=\"89\"><div align=\"center\"><a href=\"$link\" title=\"$desc\">";
 				genpreview("$where/$dir","$ldir",$add,$link,1);
@@ -857,13 +861,9 @@ if($dirDisplayMode == "standard"){
 				print "<font class=\"dates\">$mon-$day :<font color=\"#FFCC99\"><a href=\"$link\" title=\"$desc\" style=\"text-decoration: none\"><span class=\"link\"> $sdesc</span></a></font></font>\n";
 				print "</div></td>\n";
 				$ct++;
-				if($ct>4){
-					print "</tr><tr valign=\"top\">\n";
-					$ct=0;
-				}
 			}
 		}
-		if($ct<4){
+		if($ct<5){
 			for($i=0;$i<(5-$ct);$i++){
 				print "<td width=\"20%\" height=\"89\">&nbsp;</td>\n";
 			}
