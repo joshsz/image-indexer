@@ -68,7 +68,10 @@ $convert = '/usr/bin/convert';
 // dircmp: sorts directories by timestamp
 $cmpfunc = "jdircmp";
 
-$bgcolor = "#000000";
+// standard or calendar (coming soon!)
+$dirDisplayMode = "calendar";
+
+$bgcolor = "#333333";
 $textColor = "#FFFFFF";
 $linkColor = "#ccaaaa";
 $alinkColor = "#eecccc";
@@ -77,7 +80,7 @@ $tdBgcolor = "#222222";
 $tdBgcolor2 = "#333333";
 $footTextColor = "#888888";
 
-$fontFace = "Verdana";
+$fontFace = "Verdana, Arial, Helvetica, sans-serif";
 $fontSize = "-2";
 $titleFontSize = "+2";
 $imageTitleFontSize = "-1";
@@ -122,6 +125,13 @@ if(!$where){
 	$where = $prefix . '/' . $where;
 }
 $where .= '/'; //need / for find's weirdness
+if($dirDisplayMode=="calendar" && $cmpfunc != "jdircmp") $dirDisplayMode="standard";
+$changedDDM=0;
+$oldDDM=$dirDisplayMode;
+if($ddMode){
+	$dirDisplayMode=$ddMode;
+	$changedDDM=1;
+}
 
 function checkfiletypes($file){
 	$filetypes = array ("wpd", "txt", "avi", "rm", "mpg", "mpeg", "url", "mov", "wmv");
@@ -223,7 +233,7 @@ function cvt($filename,$dir,$dest,$x,$y) {
                 return "$filename.jpg";
 }	}
 
-function genpreview($dir,$reldir,$add,$link){
+function genpreview($dir,$reldir,$add,$link,$imgonly){
 	global $convert,$relative,$pv_thumbWidth,$pv_thumbHeight;
 	$source = "";
 	#print "checking $dir/preview.jpg\n<br>";
@@ -265,13 +275,13 @@ function genpreview($dir,$reldir,$add,$link){
 				$x=$y;
 				$y=$pv_thumbWidth;
 			}
-			print "<a href=\"$link\"><center>";
+			if(!$imgonly) print "<a href=\"$link\"><center>";
 			if($add != ""){
 				print "<img border=0 width=\"$x\" height=\"$y\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
 			} else {
 				print "<img border=0 width=\"$x\" height=\"$y\" src=\"$reldir/pv_thumb.jpg\">";
 			}
-			print "</center></a>";
+			if(!$imgonly) print "</center></a>";
 		}
 	}
 }
@@ -340,7 +350,13 @@ function runc($tx){
 }
 ?>
 <html>
-<head><title>Pictures at <? echo $site_name ?>
+<head>
+<style>
+.bordertable {  border: #CCCCCC; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px}
+.dates {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; color: #FFFFFF}
+.link {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; color: #FFCC99; text-decoration: none}
+</style>
+<title>Pictures at <? echo $site_name ?>
 <?php
 
 if($where){
@@ -697,9 +713,7 @@ print "</tr></table></td></tr>\n";
 ?>
 
 <tr><td>
-<table border=0 align=center bgcolor="<?echo $tdBgcolor?>" cellspacing=3>
 <?php
-
 $dirs = array ("");
 if($han = opendir("$where")){
 	while( false !== ($file = readdir($han))){
@@ -707,43 +721,166 @@ if($han = opendir("$where")){
 	}
 }
 array_shift($dirs);
-
 usort($dirs, $cmpfunc);
 
-foreach ($dirs as $dir){
-	$ldir = runc($dir);
-	if ($viewdate){
-		$stat = stat("$where/$dir");
-		$date = date("l, F dS, Y",$stat[9]);
+if($dirDisplayMode == "standard"){
+?>
+<table border=0 align=center bgcolor="<?echo $tdBgcolor?>" cellspacing=3>
+<?
+	foreach ($dirs as $dir){
+		$ldir = runc($dir);
+		if ($viewdate){
+			$stat = stat("$where/$dir");
+			$date = date("l, F dS, Y",$stat[9]);
+		}
+		if ($viewdate){
+			$link = "$PHP_SELF?viewdate=yes&where=$add/$ldir";
+			print "<tr><td>";
+			genpreview("$where/$dir","$ldir",$add,$link,0);
+			print "</td><td bgcolor=\"$tdBgcolor2\"><font face=\"$fontFace\">";
+			print "<a href=\"$link\">$dir</a>";
+			print "</font></td>";
+			print "<td bgcolor=\"$tdBgcolor2\"><font face=\"$fontFace\">$date</font></td></tr>\n";
+		} else {
+			$link = "$PHP_SELF?where=$add/$ldir";
+			print "<tr><td>";
+			genpreview("$where/$dir","$ldir",$add,$link,0);
+			print "</td><td bgcolor=\"$tdBgcolor2\"><font face=\"$fontFace\">";
+			print "<a href=\"$link\">$dir</a>";
+			print "</font></td>";
+			print "</tr>\n";
+		}
 	}
-	if ($viewdate){
-		$link = "$PHP_SELF?viewdate=yes&where=$add/$ldir";
-		print "<tr><td>";
-		genpreview("$where/$dir","$ldir",$add,$link);
-		print "</td><td bgcolor=\"$tdBgcolor2\"><font face=\"$fontFace\">";
-		print "<a href=\"$link\">$dir</a>";
-		print "</font></td>";
-		print "<td bgcolor=\"$tdBgcolor2\"><font face=\"$fontFace\">$date</font></td></tr>\n";
-	} else {
-		$link = "$PHP_SELF?where=$add/$ldir";
-		print "<tr><td>";
-		genpreview("$where/$dir","$ldir",$add,$link);
-		print "</td><td bgcolor=\"$tdBgcolor2\"><font face=\"$fontFace\">";
-		print "<a href=\"$link\">$dir</a>";
-		print "</font></td>";
-		print "</tr>\n";
+} else if($dirDisplayMode == "calendar"){
+	if(count($dirs) > 0){
+	if($cmpfunc == "jdircmp"){ //ok, can continue
+		$unsups = array();
+		$lmon="";
+		$lyr="";
+		$ct=0;
+		foreach ($dirs as $dir){
+			$ldir=runc($dir);
+			if(!preg_match("/..-..-....( \\(.*\\))?/",$dir)){
+				array_push($unsups,$dir);
+			} else {
+				$date = substr($dir, 0, 10);
+				$stuff = split("\(",$dir);
+	                	$desc = substr($stuff[1],0,-1);
+				$sdesc = $desc;
+				$mxlen=10;
+				if(strlen($desc) > $mxlen){
+					$sdesc = substr($desc,0,$mxlen)."...";
+				}
+				$dpts = split("-",$date);
+				$year=$dpts[2];
+				$mon=$dpts[0];
+				$day=$dpts[1];
+				$vmon=date("F",strtotime("$year-$mon-$day"));
+				if($lyr!=$year){
+					//new year
+					$lyr=$year;
+				}
+				if($lmon!=$mon){
+					//new month..
+					if($lmon==""){
+						//draw begin borders only
+						?>
+</td></tr></table>
+ <table width="50%" border="0" class="bordertable" align="center">
+  <tr valign="top"> 
+   <td><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><?echo $vmon." ".$year?></font></td>
+  </tr>
+  <tr valign="top"> 
+   <td height="121"> 
+    <table width="100%" border="0">
+     <tr valign="top">
+<?
+					} else {
+						//draw table end/begin borders
+?>
+     </tr>
+    </table>
+   </td>
+  </tr>
+ </table>
+<br>
+ <table width="50%" border="0" class="bordertable" align="center">
+  <tr valign="top">
+   <td><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><?echo $vmon." ".$year?></font></td>
+  </tr>
+  <tr valign="top">
+   <td height="121">
+    <table width="100%" border="0">
+     <tr valign="top">
+<?
+					}
+					$lmon=$mon;
+					$ct=0;
+				}
+                        	$link = "$PHP_SELF?where=$add/$ldir";
+            			print "<td height=\"89\"><a href=\"$link\" title=\"$desc\">";
+				genpreview("$where/$dir","$ldir",$add,$link,1);
+				print "</a><br>";
+				print "<font class=\"dates\">$mon-$day :<font color=\"#FFCC99\"><a href=\"$link\" title=\"$desc\" style=\"text-decoration: none\"><span class=\"link\"> $sdesc</span></a></font></font>\n";
+				print "</td>\n";
+				$ct++;
+				if($ct>4){
+					print "</tr><tr valign=\"top\">\n";
+					$ct=0;
+				}
+			}
+		}
+?>
+     </tr>
+    </table>
+   </td>
+  </tr>
+ </table>
+<?
 	}
+?>
+<br>
+<table width="15%" border="0" align="center">
+<?
+	if(count($unsups) > 0){
+		//display 'archives'
+?>
+    <tr> 
+      <td><font face="Verdana, Arial, Helvetica, sans-serif"><b>Archives:</b></font></td>
+    </tr>
+<?
+		foreach ($unsups as $dir){
+                        $ldir=runc($dir);
+			$link = "$PHP_SELF?where=$add/$ldir";
+    			print "<tr>\n";
+      			print "<td><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"-1\"><a href=\"$link\">$dir</a></font></td>\n";
+    			print "</tr>\n";
+		}
+
+	}
+	$detlnk = $PHP_SELF."?ddMode=standard&where=".runc($add);
+?>
+    <tr>
+      <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><a href="<?echo $detlnk;?>">view 
+        details</a></font></td>
+    </tr>
+  </table>
+<?
+}
 }
 ?>
 </table>
 </td></tr>
 <?php
-if($dirs){
+if($dirs && $dirDisplayMode != "calendar"){
 	if($viewdate){
 		print "<tr><td align=center><a href=\"$PHP_SELF?where=".runc($add)."\"><font face=\"$fontFace\">hide dates</font></a><br></td></tr>\n";
 	} else {
 		print "<tr><td align=center><a href=\"$PHP_SELF?viewdate=yes&where=".runc($add)."\"><font face=\"$fontFace\">view dates</font></a><br></td></tr>\n";
 	}
+}
+if($changedDDM){
+	print "<tr><td align=center><a href=\"$PHP_SELF?where=".runc($add)."\"><font face=\"$fontFace\">hide details</font></a><br></td></tr>\n";
 }
 ?>
 </table>
