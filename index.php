@@ -114,7 +114,7 @@ if(!$where){
 	$add = '';
 } else {
 	if(strstr($where,"..")) $where = "";
-	if(badcheck($where)) $where = "";
+	if(!is_dir($where)) $where = "";
 	$add = $where;
 	$rwhere = $relative . '/' . $where;
 	$where = $prefix . '/' . $where;
@@ -340,7 +340,8 @@ if($mode == "single"){
 	print "<center><font size=\"$fontSize\" face=\"$fontFace\"><a href=\"$backlink\">Back</a></font></center><br>\n";
 	print "<table align=center border=0>";
 	print "<tr><td colspan=3 align=center>";
-	$imsz = getimagesize($prefix.$dir."/".$file);
+	$tfl = preg_replace("/\\/","",$file);
+	$imsz = getimagesize($prefix.$dir."/".$tfl);
 	$w = $imsz[0];
 	$h = $imsz[1];
 	$fontstuff = "<font face=\"$fontFace\">";
