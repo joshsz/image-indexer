@@ -137,8 +137,7 @@ ignore_user_abort(true);
 
 $footerLine="
 <center><img src=http://haven.loki.ws/artistic.gif></center><br>
-<center><font face=\"$fontFace\" color=\"$footTextColor\">This page best viewed with a recent browser.</font></center><br>
-<font size=-2 face=\"$fontFace\" color=\"$footTextColor\"><center>This php thing &copy; <a href=\"mailto:php@loki.ws\">Joshua Szmajda</a> 2002 - 2004</center></font>
+<font size=-2 face=\"$fontFace\" color=\"$footTextColor\"><center>This php thing &copy; <a href=\"mailto:php@loki.ws\">Joshua Szmajda</a> 2002 - 2005</center></font>
 <script language=javascript src=\"http://loki.ws/awstats_misc_tracker.js\"></script>
 </body></html>";
 // if we didn't get a path, use the default one of just the prefix
@@ -147,12 +146,16 @@ if(!$where){
 	$where = $prefix;
 	$add = '';
 } else {
-	$where = preg_replace("/\\\\/","",$where);
-	if(strstr($where,"..")) $where = "";
-	if(!is_dir($prefix.'/'.$where)) $where = "";
-	$add = $where;
-	$rwhere = $relative . '/' . $where;
-	$where = $prefix . '/' . $where;
+        $where = preg_replace("/\\\\/","",$where); #strip backslashes
+        if(strstr($where,"..")) $where = "";
+        if(!is_dir($prefix.'/'.$where)) $where = "";
+        $add = $where;
+        if(!preg_match("/^\/$/",$relative)){
+            $rwhere = $relative . '/' . $where;
+        } else {
+            $rwhere = $where;
+        }
+        $where = $prefix . ((!preg_match("/^\//",$where))?'/':'') . $where;
 }
 $where .= '/'; //need / for find's weirdness
 if($dirDisplayMode=="calendar" && $cmpfunc != "jdircmp") $dirDisplayMode="standard";
