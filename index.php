@@ -311,7 +311,12 @@ function genpreview($dir,$reldir,$add,$link,$imgonly){
 			}
 			if(!$imgonly) print "<a href=\"$link\"><center>";
 			if($add != ""){
-				print "<img border=0 width=\"$x\" height=\"$y\" src=\"$relative/$add/$reldir/pv_thumb.jpg\">";
+                                print "<img border=0 width=\"$x\" height=\"$y\" src=\"";
+                                if(!preg_match("/^\/$/",$relative)){
+                                        print "$relative/";
+                                }
+                                print "$add/$reldir";
+                                print "/pv_thumb.jpg\">";
 			} else {
 				print "<img border=0 width=\"$x\" height=\"$y\" src=\"$reldir/pv_thumb.jpg\">";
 			}
