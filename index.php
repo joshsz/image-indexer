@@ -1,6 +1,6 @@
 <?php
 /*
-This is version 1.7 of Josh's indexer!
+This is version 1.9 of Josh's indexer!
 (C) 2003 Joshua Szmajda (php@loki.ws)
 You're free to use and distribute this program, as long
 as you send any code changes to me, and don't sell it
@@ -47,12 +47,6 @@ Good luck! Send any questions / comments / concerns to php@loki.ws
 ###################################################################
 #### CONFIGURATION STARTS HERE ####################################
 ###################################################################
-
-// set this to wherever your root dir for pics is (at a filesystem level)
-$prefix = "/var/www/htdocs/pics";
-
-//set this to your relative path (what a user would see in the address bar after your server name)
-$relative = "/pics";
 
 //this is the name that goes into the title for the site
 $site_name = "Your site here";
@@ -128,15 +122,15 @@ $Styles="$Calendar_borderTable\n$Calendar_dates\n$Calendar_link";
 ####################################################################
 #### CONFIGURATION ENDS HERE #######################################
 ####################################################################
+//No more register globals hack
 /*
 if(!(bool) ini_get('register_gobals')){
   if (!empty($_REQUEST)) while(list($inname, $invalue) = each($_REQUEST)) $$inname = $invalue;
   #if (!empty($HTTP_POST_VARS)) while(list($inname, $invalue) = each($HTTP_POST_VARS)) $$inname = $invalue;
   if (!empty($_SERVER)) while(list($inname, $invalue) = each($_SERVER)) $$inname = $invalue;
 }
-ignore_user_abort(true);
 */
-//No more register globals hack
+ignore_user_abort(true);
 $auto = $_REQUEST{'auto'};
 $img = $_REQUEST{'img'};
 $mode = $_REQUEST{'mode'};
@@ -144,6 +138,13 @@ $timer = $_REQUEST{'timer'};
 $viewdate = $_REQUEST{'viewdate'};
 $where = $_REQUEST{'where'};
 $PHP_SELF = $_SERVER{'PHP_SELF'};
+$prefix = $_SERVER{'SCRIPT_FILENAME'};
+$ppsar = preg_split("/\//",$prefix);
+array_pop($ppsar);
+$prefix = implode("/",$ppsar);
+$ppsar = preg_split("/\//",$PHP_SELF);
+array_pop($ppsar);
+$relative = implode("/",$ppsar);
 
 $footerLine="
 <center><img src=http://haven.loki.ws/artistic.gif></center><br>
