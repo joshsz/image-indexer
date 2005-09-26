@@ -129,9 +129,9 @@ $Styles="$Calendar_borderTable\n$Calendar_dates\n$Calendar_link";
 #### CONFIGURATION ENDS HERE #######################################
 ####################################################################
 if(!(bool) ini_get('register_gobals')){
-if (!empty($HTTP_GET_VARS)) while(list($inname, $invalue) = each($HTTP_GET_VARS)) $$inname = $invalue;
-if (!empty($HTTP_POST_VARS)) while(list($inname, $invalue) = each($HTTP_POST_VARS)) $$inname = $invalue;
-if (!empty($HTTP_SERVER_VARS)) while(list($inname, $invalue) = each($HTTP_SERVER_VARS)) $$inname = $invalue;
+  if (!empty($_REQUEST)) while(list($inname, $invalue) = each($_REQUEST)) $$inname = $invalue;
+  #if (!empty($HTTP_POST_VARS)) while(list($inname, $invalue) = each($HTTP_POST_VARS)) $$inname = $invalue;
+  if (!empty($_SERVER)) while(list($inname, $invalue) = each($_SERVER)) $$inname = $invalue;
 }
 ignore_user_abort(true);
 
