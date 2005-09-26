@@ -128,12 +128,22 @@ $Styles="$Calendar_borderTable\n$Calendar_dates\n$Calendar_link";
 ####################################################################
 #### CONFIGURATION ENDS HERE #######################################
 ####################################################################
+/*
 if(!(bool) ini_get('register_gobals')){
   if (!empty($_REQUEST)) while(list($inname, $invalue) = each($_REQUEST)) $$inname = $invalue;
   #if (!empty($HTTP_POST_VARS)) while(list($inname, $invalue) = each($HTTP_POST_VARS)) $$inname = $invalue;
   if (!empty($_SERVER)) while(list($inname, $invalue) = each($_SERVER)) $$inname = $invalue;
 }
 ignore_user_abort(true);
+*/
+//No more register globals hack
+$auto = $_REQUEST{'auto'};
+$img = $_REQUEST{'img'};
+$mode = $_REQUEST{'mode'};
+$timer = $_REQUEST{'timer'};
+$viewdate = $_REQUEST{'viewdate'};
+$where = $_REQUEST{'where'};
+$PHP_SELF = $_SERVER{'PHP_SELF'};
 
 $footerLine="
 <center><img src=http://haven.loki.ws/artistic.gif></center><br>
