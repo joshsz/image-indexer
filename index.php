@@ -181,7 +181,7 @@ function checkfiletypes($file){
 	$filetypes = array ("wpd", "txt", "avi", "rm", "mpg", "mpeg", "url", "mov", "wmv");
 
 	foreach($filetypes as $type){
-		if(stristr($file,".$type") and !(stristr($file,"description.txt"))){
+		if(stristr($file,".$type") and !(stristr($file,"description.txt")) and !(stristr($file,"captions.txt")){
 			return 1;
 		}
 	}
@@ -398,6 +398,23 @@ function runc($tx){
 	$tx = preg_replace("/\%2F/","/",$tx);
 	return $tx;
 }
+
+function stripos_php4($haystack,$needle,$offset = 0){
+    return(strpos(strtolower($haystack),strtolower($needle),$offset));
+}
+function getCaption($filename,$path){
+    if(file_exists($path."/captions.txt")){
+	$fh = fopen($path."/captions.txt","r");
+	if($fh){
+	    while(!feof($fh)){
+		$line = fgets($fh,4096);
+		if(stripos_php4($filename,$line) == 0)
+		    return substr($line,strpos(" ",$line));
+		}
+	    }
+	}
+    }
+}
 ?>
 <html>
 <head>
@@ -479,6 +496,10 @@ if($mode == "single"){
 	if($w > 0) print "width=$w height=$h";
 	print ">\n";
 	print "</td></tr>";
+	$capt = getCaption($tfl,$prefix.$dir);
+	if(strlen($capt) > 0){
+	    print "<tr><td align=\"center\">$capt</td></tr>\n";
+	}
 	print "<tr><td align=center>$fontstuff";
 	print "<a href=\"$plink\" accesskey=\"p\">Prev</a> </font>";
 	print "</td><td align=center>$fontstuff";
