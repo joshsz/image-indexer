@@ -399,16 +399,13 @@ function runc($tx){
 	return $tx;
 }
 
-function stripos_php4($haystack,$needle,$offset = 0){
-    return(strpos(strtolower($haystack),strtolower($needle),$offset));
-}
 function getCaption($filename,$path){
     if(file_exists($path."/captions.txt")){
 	$fh = fopen($path."/captions.txt","r");
 	if($fh){
 	    while(!feof($fh)){
 		$line = fgets($fh,4096);
-		if(stripos_php4($filename,$line) == 0){
+		if(preg_match("/^$filename/i",$line)){
 		    return substr($line,strpos($line," "));
 		}
 	    }
