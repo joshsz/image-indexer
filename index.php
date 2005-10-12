@@ -409,7 +409,7 @@ function getCaption($filename,$path){
 	    while(!feof($fh)){
 		$line = fgets($fh,4096);
 		if(stripos_php4($filename,$line) == 0){
-		    return substr($line,strpos(" ",$line));
+		    return substr($line,strpos($line," "));
 		}
 	    }
 	}
@@ -496,9 +496,9 @@ if($mode == "single"){
 	if($w > 0) print "width=$w height=$h";
 	print ">\n";
 	print "</td></tr>";
-	$capt = getCaption($tfl,$prefix.$dir);
+	$capt = getCaption($tfl,$prefix."/".$wheredir);
 	if(strlen($capt) > 0){
-	    print "<tr><td align=\"center\">$capt</td></tr>\n";
+	    print "<tr><td colspan=\"3\" align=\"center\" style=\"padding-bottom:10px;padding-top:10px;\">$fontstuff$capt</font></td></tr>\n";
 	}
 	print "<tr><td align=center>$fontstuff";
 	print "<a href=\"$plink\" accesskey=\"p\">Prev</a> </font>";
