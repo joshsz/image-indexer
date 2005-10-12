@@ -408,7 +408,7 @@ function getCaption($filename,$path){
 	if($fh){
 	    while(!feof($fh)){
 		$line = fgets($fh,4096);
-		if(stripos_php4($filename,$line) == 0)
+		if(stripos_php4($filename,$line) == 0){
 		    return substr($line,strpos(" ",$line));
 		}
 	    }
