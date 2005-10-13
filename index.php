@@ -83,6 +83,8 @@ $tdBgcolor = "#222222";
 $tdBgcolor2 = "#333333";
 // text color of the footer (copyright info etc)
 $footTextColor = "#888888";
+// background color for caption text
+$captionBGColor = "#222222";
 
 // general font face
 $fontFace = "Verdana, Arial, Helvetica, sans-serif";
@@ -362,7 +364,7 @@ function crumnav($add,$imnm){
 	$fsu="<font size=\"$fontSize\" face=\"$fontFace\">";
 	print "<tr><td><table border=0><tr><td>$fsu"."You are here:</font></td><td>$fsu<a href=\"$PHP_SELF";
 	if($viewdate) print "?viewdate=$viewdate";
-	print "\">Home</a></font></td>";
+	print "\" accesskey=\"h\"><b>H</b>ome</a></font></td>";
 	$dpts = preg_split("/\//",$add);
 	$oarr=array();
 	while(count($dpts) > 0){
@@ -493,18 +495,18 @@ if($mode == "single"){
 	if($w > 0) print "width=$w height=$h";
 	print ">\n";
 	print "</td></tr>";
-	$capt = getCaption($tfl,$prefix."/".$wheredir);
-	if(strlen($capt) > 0){
-	    print "<tr><td colspan=\"3\" align=\"center\" style=\"padding-bottom:10px;padding-top:10px;\">$fontstuff$capt</font></td></tr>\n";
-	}
 	print "<tr><td align=center>$fontstuff";
-	print "<a href=\"$plink\" accesskey=\"p\">Prev</a> </font>";
+	print "<a href=\"$plink\" accesskey=\"p\"><b>P</b>rev</a> </font>";
 	print "</td><td align=center>$fontstuff";
 	//print "<A HREF=\"javascript:history.go(-1)\">Back</a>\n";
-	print "<a href=\"$backlink\" accesskey=\"b\">Back</a></font>\n";
+	print "<a href=\"$backlink\" accesskey=\"b\"><b>B</b>ack</a></font>\n";
 	print "</td><td align=center>$fontstuff";
-	print " <a href=\"$nlink\" accesskey=\"n\">Next</a> </font>";
+	print " <a href=\"$nlink\" accesskey=\"n\"><b>N</b>ext</a> </font>";
 	print "</td></tr>";
+	$capt = getCaption($tfl,$prefix."/".$wheredir);
+	if(strlen($capt) > 0){
+	    print "<tr><td colspan=\"3\" align=\"center\" bgcolor=\"$captionBGColor\" style=\"padding-bottom:10px;padding-top:10px;\">$fontstuff$capt</font></td></tr>\n";
+	}
         print "<tr><td colspan=3 align=center>$fontstuff".($idx+1)." / ".($size+1)." </font></td></tr>";
 	if($auto == "true"){
 		print "<tr><td colspan=3 align=center>$fontstuff<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=false\">Turn Auto Off</a></font></td></tr>";

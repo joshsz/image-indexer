@@ -1,0 +1,11 @@
+1.74
+Added bold to accesskey available items
+Added accesskey 'h' to Home links
+
+1.72
+Added rudimentary caption system. create a text file 'captions.txt' in the dir
+with the appropriate pictures. Its format is 'filename some description all on
+one line'. For example:
+Pic102.jpg This is a neat picture of something
+Pic103.jpg Here I am with a huge fish!
+Pic104.jpg You can use<br>html in here, <b>It's not sanitized!</b>
