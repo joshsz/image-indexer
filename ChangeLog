@@ -1,3 +1,7 @@
+1.76
+Made some changes to properly support having the indexer at the root of a
+site.
+
 1.74
 Added bold to accesskey available items
 Added accesskey 'h' to Home links
