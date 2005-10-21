@@ -324,16 +324,14 @@ function genpreview($dir,$reldir,$add,$link,$imgonly){
 				$y=$pv_thumbWidth;
 			}
 			if(!$imgonly) print "<a href=\"$link\"><center>";
+			$im = "";
 			if($add != ""){
-                                print "<img border=0 width=\"$x\" height=\"$y\" src=\"";
-                                if(!preg_match("/^\/$/",$relative)){
-                                        print "$relative/";
-                                }
-                                print "$add/$reldir";
-                                print "/pv_thumb.jpg\">";
+				$im = "$relative/$add/$reldir/pv_thumb.jpg";
 			} else {
-				print "<img border=0 width=\"$x\" height=\"$y\" src=\"$reldir/pv_thumb.jpg\">";
+				$im = "$reldir/pv_thumb.jpg";
 			}
+			$im = preg_replace("/\/\//","/",$im);
+			print "<img border=\"0\" width=\"$x\" height=\"$y\" src=\"$im\">";
 			if(!$imgonly) print "</center></a>";
 		}
 	}
