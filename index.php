@@ -170,6 +170,7 @@ if(!$where){
         }
         $where = $prefix . ((!preg_match("/^\//",$where))?'/':'') . $where;
 }
+$rwhere = preg_replace("/\/\//","/",$rwhere);
 $where .= '/'; //need / for find's weirdness
 if($dirDisplayMode=="calendar" && $cmpfunc != "jdircmp") $dirDisplayMode="standard";
 $changedDDM=0;
@@ -459,6 +460,7 @@ if($mode == "single"){
 	$tfl = preg_replace("/\\\\/","",$file);
 	$tfl=preg_replace("/%20/"," ",$tfl);
 	$timg = preg_replace("/\\\\/","",$img);
+	$timg = preg_replace("/\/\//","/",$img);
 	$pics = getPixArray($prefix.$dir);
 	$idx = array_search($tfl,$pics);
 	$next = $idx+1;
@@ -679,9 +681,9 @@ if($flag == 1 and $pics){
 			$size = getimagesize("$where/tn/"."$pn");
 			if ($size[0] > $mxSize or $size[1] > $mxSize){
 				if($size[0] > $size[1]){
-					print "<img border=0 src=\"$rwhere/tn/$lpn\" width=$thumbWidth height=$thumbHeight><br>";
+					print "<img border=\"0\" src=\"$rwhere/tn/$lpn\" width=\"$thumbWidth\" height=\"$thumbHeight\"><br>";
 				} else {
-					print "<img border=0 src=\"$rwhere/tn/$lpn\" width=$thumbHeight height=$thumbWidth><br>";
+					print "<img border=\"0\" src=\"$rwhere/tn/$lpn\" width=\"$thumbHeight\" height=\"$thumbWidth\"><br>";
 				}
 			} else {
 				print "<img border=0 src=\"$rwhere/tn/$lpn\"><br>";
