@@ -505,7 +505,7 @@ if($mode == "single"){
 	print "</td></tr>";
 	$capt = getCaption($tfl,$prefix."/".$wheredir);
 	if(strlen($capt) > 0){
-	    print "<tr><td colspan=\"3\" align=\"center\" bgcolor=\"$captionBGColor\" style=\"padding-bottom:10px;padding-top:10px;\">$fontstuff$capt</font></td></tr>\n";
+	    print "<tr><td colspan=\"3\" align=\"center\" bgcolor=\"$captionBGColor\" style=\"width:$lowWidth"."px;padding-bottom:10px;padding-top:10px;\">$fontstuff$capt</font></td></tr>\n";
 	}
         print "<tr><td colspan=3 align=center>$fontstuff".($idx+1)." / ".($size+1)." </font></td></tr>";
 	if($auto == "true"){
@@ -522,6 +522,28 @@ if($mode == "single"){
 		print "</font></td></tr>";
 	}
 	print "</table></td></tr></table>";
+	?>
+<script language="javascript">
+<!--
+function keyhandler(e){
+    if(e.keyCode == 37){ //left
+	window.location = "<?=$plink?>";
+    } else if(e.keyCode == 39 || e.keyCode == 32){ //right
+	window.location = "<?=$nlink?>";
+    } else if(e.keyCode == 13){ //right
+	window.open("<?="$wheredir/$tfl"?>");
+    } else if(String.fromCharCode(e.keyCode) == "b" || String.fromCharCode(e.keyCode) == "B"){
+	window.location = "<?=$backlink?>";
+    } else if(String.fromCharCode(e.keyCode) == "h" || String.fromCharCode(e.keyCode) == "H"){
+	window.location = "<?=$PHP_SELF?>";
+    } //else {
+	//alert(e.keyCode);
+    //}
+}
+document.onkeyup = keyhandler;
+//-->
+</script>
+	<?
 	print $footerLine;
 	exit();
 }
