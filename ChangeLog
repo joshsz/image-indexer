@@ -1,3 +1,8 @@
+1.78
+Added keyhandlers to single image view: left is previous image, right and
+space are next image, enter is open full image in a new window. 'b' is back,
+and 'h' is home.
+
 1.76
 Made some changes to properly support having the indexer at the root of a
 site.
