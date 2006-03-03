@@ -66,6 +66,20 @@ $cmpfunc = "jdircmp";
 // for calendar mode, you have to use jdircmp and name dirs in the form "MM-DD-YYYY (Description)"
 $dirDisplayMode = "calendar";
 
+// Which way do you want the thumbnails in a dir to be orgainzed? square or full?
+// square uses thumbSize for both dimensions, and dosen't print a filename
+// full uses thumbWidth and thumbHeight for the dimensions, and prints filename along with 'low quality' and 'high quality' links
+$thumbMode = "square";
+
+//Allow linking to full quality version? (true or false)
+$fullQLink = true;
+
+//Show 'details' link at bottom of main page? (true or false)
+$viewDetailsLink = false;
+
+//Number of pictures to show in a row on directory contents view
+$dirContentsWidth = 5;
+
 // Standard Display Mode Colors
 // background color of the site
 $bgcolor = "#333333";
@@ -96,6 +110,7 @@ $titleFontSize = "+2";
 $imageTitleFontSize = "-1";
 
 //dimentions for thumbnails
+$thumbSize = 75;
 $thumbWidth = 120;
 $thumbHeight = 90;
 // dimentions for low-quality images
@@ -264,7 +279,6 @@ function cvt($filename,$dir,$dest,$x,$y) {
 	global $convert;
 	if(!is_writable($dir."/".$dest)){ print "can't create thumbnails, $dir/$dest is not writable<br>\n"; exit(0); }
         $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename\"";
-	#$STUFF = `echo `;
  
 	if(stristr($filename,".jpg") or stristr($filename,".png")){
                 `$cmd`;
@@ -280,6 +294,53 @@ function cvt($filename,$dir,$dest,$x,$y) {
 		chmod("$dir/$dest/$filename.jpg",0777);
                 return "$filename.jpg";
 }	}
+
+function sqcvt($filename,$dir,$dest,$x,$y) {
+        global $convert,$thumbSize;
+        if(!is_writable($dir."/".$dest)){ print "can't create thumbnails, $dir/$dest is not writable<br>\n"; exit(0); }
+        $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename\"";
+
+        if (stristr($filename,".gif")){
+                $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename.jpg\"";
+                `$cmd`;
+                `mv $dir/$dest/$filename.jpg.0 $dir/$dest/$filename.jpg`;
+                `rm -f $dir/$dest/$filename.jpg.*`;
+                $filename = "$filename.jpg";
+        }
+        if($x <= $thumbSize or $y <= $thumbSize){
+                #first resize to a temp file, then crop to the dest
+                $rcmd = "";
+                $info = getimagesize("$dir/$filename");
+                if($info[0] > $info[1]){
+                        $rcmd = "99999x$thumbSize";
+                } else {
+                        $rcmd = $thumbSize."x99999";
+                }
+                $cmd = "$convert -resize $rcmd \"$dir/$filename\" \"/tmp/tmp.jpg\"";
+                #print "c1: $cmd<br>";
+                `$cmd`;
+                //determine new size info
+                $info = getimagesize("/tmp/tmp.jpg");
+                $width = $info[0];
+                $height = $info[1];
+                #print "new w:$width h:$height<br>";
+                $cropcmd = $thumbSize."x$thumbSize+";
+                if($width > $height){
+                        $offset = (int)(($width - $thumbSize) / 2);
+                        $cropcmd .= $offset."+0";
+                } else {
+                        $offset = (int)(($height - $thumbSize) / 2);
+                        $cropcmd .= "0+$offset";
+                }
+                $cmd = "$convert -crop $cropcmd \"/tmp/tmp.jpg\" \"$dir/$dest/$filename\"";
+                #print "c2: $cmd<br>";
+                `$cmd`;
+        } else {
+                `$cmd`;
+        }
+        chmod("$dir/$dest/$filename",0777);
+        return $filename;
+}
 
 function genpreview($dir,$reldir,$add,$link,$imgonly){
 	global $convert,$relative,$pv_thumbWidth,$pv_thumbHeight;
@@ -458,7 +519,8 @@ if($mode == "single"){
 	$tfl = preg_replace("/\\\\/","",$file);
 	$tfl=preg_replace("/%20/"," ",$tfl);
 	$timg = preg_replace("/\\\\/","",$img);
-	$timg = preg_replace("/\/\//","/",$img);
+	$timg = preg_replace("/'/","%27",$timg);
+	$timg = preg_replace("/\/\//","/",$timg);
 	$pics = getPixArray($prefix.$dir);
 	$idx = array_search($tfl,$pics);
 	$next = $idx+1;
@@ -491,10 +553,16 @@ if($mode == "single"){
 	$w = $imsz[0];
 	$h = $imsz[1];
 	$fontstuff = "<font face=\"$fontFace\">";
-	print "<a href=\"$wheredir/$tfl\" target=\"_new\"><img border=\"0\" src=\"$timg\"";
+	if($fullQLink){
+	    print "<a href=\"$wheredir/$tfl\" target=\"_new\">";
+	}
+	print "<img border=\"0\" src=\"$timg\"";
 	if($w > 0) print "width=$w height=$h";
-	print ">\n";
-	print "</td></tr>";
+	print ">";
+	if($fullQLink){
+	    print "</a>";
+	}
+	print "</td></tr>\n";
 	print "<tr><td align=center>$fontstuff";
 	print "<a href=\"$plink\" accesskey=\"p\"><b>P</b>rev</a> </font>";
 	print "</td><td align=center>$fontstuff";
@@ -512,8 +580,7 @@ if($mode == "single"){
 		print "<tr><td colspan=3 align=center>$fontstuff<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=false\">Turn Auto Off</a></font></td></tr>";
 	} else {
 		print "<tr><td colspan=3 align=center>$fontstuff";
-		print "Auto Slideshow<br>";
-		print "Seconds Delay: ";
+		print "Slideshow Delay: ";
 		print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=1\">1</a> ";
 		print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=2\">2</a> ";
 		print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=3\">3</a> ";
@@ -615,10 +682,12 @@ if((!file_exists("$where"."tn") or ($pics != $upic)) and $pics){
 		foreach ($pics as $pic){
 			@unlink("$where"."tn/$pic");
 			$size = getimagesize("$where"."$pic");
+			$fn = "cvt";
+			if($thumbMode == "square"){ $fn = "sqcvt"; }
 			if(($size[0] > $size[1]) or (!$size)){
-				$filegot = cvt($pic,$where,"tn",$thumbWidth,$thumbHeight);
+				$filegot = $fn($pic,$where,"tn",$thumbWidth,$thumbHeight);
 			} else {
-				$filegot = cvt($pic,$where,"tn",$thumbHeight,$thumbWidth);
+				$filegot = $fn($pic,$where,"tn",$thumbHeight,$thumbWidth);
 			}
 		}
 
@@ -655,10 +724,12 @@ if((!file_exists("$where"."Low") or ($pics != $vpic)) and $pics){
 		foreach ($pics as $pic){
 			@unlink("$where"."Low/$pic");
 			$size = getimagesize("$where"."$pic");
+			$fn = "cvt";
+			if($thumbMode == "square"){ $fn = "sqcvt"; }
 			if(($size[0] > $size[1]) or (!$size)){
-				$filegot = cvt($pic,$where,"Low",$lowWidth,$lowHeight);
+				$filegot = $fn($pic,$where,"Low",$lowWidth,$lowHeight);
 			} else {
-				$filegot = cvt($pic,$where,"Low",$lowHeight,$lowWidth);
+				$filegot = $fn($pic,$where,"Low",$lowHeight,$lowWidth);
 			}
 		}
 
@@ -682,47 +753,55 @@ if($flag == 1 and $pics){
 	print "<tr><td><table border=0 cellspacing=5 cellpadding=3 align=center>\n<tr align=center>";
 	foreach ($pics as $pic){
 		if($pic == "preview.jpg" or $pic == "pv_thumb.jpg") continue;
-		if($count % 4 == 0){
+		if($count % $dirContentsWidth == 0){
 			print "</tr><tr align=center>\n";
 		}
 		$lpic = preg_replace("/ /","%20",$pic);
 		if($first == "") $first = "$rwhere/Low/$lpic";
-		$mxSize=0;
-		if($thumbWidth > $thumbHeight){
-			$mxSize = $thumbWidth;
+		if($thumbMode == "square"){
+		    print "<td bgcolor=\"$tdBgcolor\"><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\">";
+		    $size = getimagesize("$where/tn/"."$pic");
+		    #print "<img style=\"border:1px solid #000000\" src=\"$rwhere/tn/$lpic\" width=\"$thumbSize\" height=\"$thumbSize\"><br>";
+		    print "<img border=\"0\" src=\"$rwhere/tn/$lpic\" width=\"$thumbSize\" height=\"$thumbSize\"><br>";
+		    print "</a></td>\n";
 		} else {
-			$mxSize = $thumbHeight;
-		}
-		if(stristr($pic,".gif")){
-			$pn = $pic;
-			$pn .= '.jpg';
-			$lpn = preg_replace("/ /","%20",$pn);
-			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpn")."\">";
-			$size = getimagesize("$where/tn/"."$pn");
-			if ($size[0] > $mxSize or $size[1] > $mxSize){
-				if($size[0] > $size[1]){
-					print "<img border=\"0\" src=\"$rwhere/tn/$lpn\" width=\"$thumbWidth\" height=\"$thumbHeight\"><br>";
-				} else {
-					print "<img border=\"0\" src=\"$rwhere/tn/$lpn\" width=\"$thumbHeight\" height=\"$thumbWidth\"><br>";
-				}
-			} else {
-				print "<img border=0 src=\"$rwhere/tn/$lpn\"><br>";
-			}
-			print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpn")."\"><font $fontstuff>Low Quality</font></a></td>\n";
+		    $mxSize=0;
+		    if($thumbWidth > $thumbHeight){
+			    $mxSize = $thumbWidth;
+		    } else {
+			    $mxSize = $thumbHeight;
+		    }
+		    if(stristr($pic,".gif")){
+			    $pn = $pic;
+			    $pn .= '.jpg';
+			    $lpn = preg_replace("/ /","%20",$pn);
+			    print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpn")."\">";
+			    $size = getimagesize("$where/tn/"."$pn");
+			    if ($size[0] > $mxSize or $size[1] > $mxSize){
+				    if($size[0] > $size[1]){
+					    print "<img border=\"0\" src=\"$rwhere/tn/$lpn\" width=\"$thumbWidth\" height=\"$thumbHeight\"><br>";
+				    } else {
+					    print "<img border=\"0\" src=\"$rwhere/tn/$lpn\" width=\"$thumbHeight\" height=\"$thumbWidth\"><br>";
+				    }
+			    } else {
+				    print "<img border=0 src=\"$rwhere/tn/$lpn\"><br>";
+			    }
+			    print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpn")."\"><font $fontstuff>Low Quality</font></a></td>\n";
 
-		} else {
-			print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\">";
-			$size = getimagesize("$where/tn/"."$pic");
-			if ($size[0] > $mxSize or $size[1] > $mxSize){
-				if($size[0] > $size[1]){
-					print "<img border=0 src=\"$rwhere/tn/$lpic\" width=$thumbWidth height=$thumbHeight><br>";
-				} else {
-					print "<img border=0 src=\"$rwhere/tn/$lpic\" width=$thumbHeight height=$thumbWidth><br>";
-				}
-			} else {
-				print "<img border=0 src=\"$rwhere/tn/$lpic\"><br>";
-			}
-			print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\"><font $fontstuff>Low Quality</font></a></td>\n";
+		    } else {
+			    print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\">";
+			    $size = getimagesize("$where/tn/"."$pic");
+			    if ($size[0] > $mxSize or $size[1] > $mxSize){
+				    if($size[0] > $size[1]){
+					    print "<img border=0 src=\"$rwhere/tn/$lpic\" width=$thumbWidth height=$thumbHeight><br>";
+				    } else {
+					    print "<img border=0 src=\"$rwhere/tn/$lpic\" width=$thumbHeight height=$thumbWidth><br>";
+				    }
+			    } else {
+				    print "<img border=0 src=\"$rwhere/tn/$lpic\"><br>";
+			    }
+			    print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\"><font $fontstuff>Low Quality</font></a></td>\n";
+		    }
 		}
 		$count++;
 	}
@@ -733,8 +812,7 @@ if($flag == 1 and $pics){
 	$fontstuff="<font face=\"$fontFace\">";
 	print "<tr><td><table border=0 align=center>";
 	print "<tr><td colspan=3 align=center>$fontstuff";
-	print "Auto Slideshow<br>";
-	print "Seconds Delay: ";
+	print "Slideshow Delay: ";
 	print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=1\">1</a> ";
 	print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=2\">2</a> ";
 	print "<a href=\"$PHP_SELF?mode=single&img=".runc($img)."&auto=true&timer=3\">3</a> ";
@@ -964,10 +1042,12 @@ if($dirDisplayMode == "standard"){
 	}
 	$detlnk = $PHP_SELF."?ddMode=standard&where=".runc($add);
 ?>
+<?if($viewDetailsLink){?>
     <tr>
       <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><a href="<?echo $detlnk;?>">view 
         details</a></font></td>
     </tr>
+<?}?>
   </table>
 <?
 }
