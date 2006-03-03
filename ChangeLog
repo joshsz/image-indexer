@@ -1,3 +1,14 @@
+1.84
+Added square thumbMode, along with visual controls for it (squareBorderSize
+and squareBorderColor)
+Added dirContentsWidth to allow specification of how many thumbnails to show
+in a row on the directory contents view
+Added fullQLink toggle to choose to allow linking to the full quality version
+of the file
+Added viewDetails toggle to choose to show the 'view details' link at the
+bottom of the main page
+Removed artistic.gif img link (it was getting old)
+
 1.78
 Added keyhandlers to single image view: left is previous image, right and
 space are next image, enter is open full image in a new window. 'b' is back,
