@@ -312,7 +312,7 @@ function sqcvt($filename,$dir,$dest,$x,$y) {
                 $filename = "$filename.jpg";
         }
         if($x <= $thumbSize or $y <= $thumbSize){
-		$tranint = rand(1000,9999);
+		$trandint = rand(1000,9999);
                 #first resize to a temp file, then crop to the dest
                 $rcmd = "";
                 $info = getimagesize("$dir/$filename");
@@ -340,6 +340,8 @@ function sqcvt($filename,$dir,$dest,$x,$y) {
                 $cmd = "$convert -crop $cropcmd \"/tmp/tmp-$trandint.jpg\" \"$dir/$dest/$filename\"";
                 #print "c2: $cmd<br>";
                 `$cmd`;
+		$cmd = "rm -f /tmp/tmp-$trandint.jpg";
+		`$cmd`;
         } else {
                 `$cmd`;
         }
