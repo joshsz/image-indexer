@@ -681,13 +681,15 @@ if((!file_exists("$where"."tn") or ($pics != $upic)) and $pics){
 		chmod("$where"."tn/index.lst",0777);
 		foreach ($pics as $pic){
 			@unlink("$where"."tn/$pic");
-			$size = getimagesize("$where"."$pic");
-			$fn = "cvt";
-			if($thumbMode == "square"){ $fn = "sqcvt"; }
-			if(($size[0] > $size[1]) or (!$size)){
-				$filegot = $fn($pic,$where,"tn",$thumbWidth,$thumbHeight);
+			if($thumbMode == "square"){ 
+			    $filegot = sqcvt($pic,$where,"tn",$thumbSize,$thumbSize);
 			} else {
-				$filegot = $fn($pic,$where,"tn",$thumbHeight,$thumbWidth);
+			    $size = getimagesize("$where"."$pic");
+			    if(($size[0] > $size[1]) or (!$size)){
+				$filegot = cvt($pic,$where,"tn",$thumbWidth,$thumbHeight);
+			    } else {
+				$filegot = cvt($pic,$where,"tn",$thumbHeight,$thumbWidth);
+			    }
 			}
 		}
 
@@ -724,12 +726,10 @@ if((!file_exists("$where"."Low") or ($pics != $vpic)) and $pics){
 		foreach ($pics as $pic){
 			@unlink("$where"."Low/$pic");
 			$size = getimagesize("$where"."$pic");
-			$fn = "cvt";
-			if($thumbMode == "square"){ $fn = "sqcvt"; }
 			if(($size[0] > $size[1]) or (!$size)){
-				$filegot = $fn($pic,$where,"Low",$lowWidth,$lowHeight);
+				$filegot = cvt($pic,$where,"Low",$lowWidth,$lowHeight);
 			} else {
-				$filegot = $fn($pic,$where,"Low",$lowHeight,$lowWidth);
+				$filegot = cvt($pic,$where,"Low",$lowHeight,$lowWidth);
 			}
 		}
 
