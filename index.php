@@ -71,6 +71,10 @@ $dirDisplayMode = "calendar";
 // full uses thumbWidth and thumbHeight for the dimensions, and prints filename along with 'low quality' and 'high quality' links
 $thumbMode = "square";
 
+//These control the size and color of the general border around the thumbs in square mode
+$squareBorderSize = 7;
+$squareBorderColor = "#222222";
+
 //Allow linking to full quality version? (true or false)
 $fullQLink = true;
 
@@ -750,7 +754,11 @@ $fontstuff = "size=\"$fontSize\" face=\"$fontFace\"";
 $titlestuff = "size=\"$imageTitleFontSize\" face=\"$fontFace\"";
 if($flag == 1 and $pics){
 	$count = 0;
-	print "<tr><td><table border=0 cellspacing=5 cellpadding=3 align=center>\n<tr align=center>";
+	if($thumbMode == "square"){
+	    print "<tr><td><table border=\"0\" cellspacing=\"1\" cellpadding=\"2\" align=\"center\" style=\"border:$squareBorderSize"."px solid $squareBorderColor\">\n<tr align=\"center\">";
+	} else {
+	    print "<tr><td><table border=\"0\" cellspacing=\"5\" cellpadding=\"3\" align=\"center\">\n<tr align=\"center\">";
+	}
 	foreach ($pics as $pic){
 		if($pic == "preview.jpg" or $pic == "pv_thumb.jpg") continue;
 		if($count % $dirContentsWidth == 0){
