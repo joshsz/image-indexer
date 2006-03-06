@@ -1,3 +1,6 @@
+1.85
+Fixed a bug where some webservers wouldn't let you write to /tmp/
+
 1.84
 Added square thumbMode, along with visual controls for it (squareBorderSize
 and squareBorderColor)
