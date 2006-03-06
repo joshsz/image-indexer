@@ -283,6 +283,7 @@ function cvt($filename,$dir,$dest,$x,$y) {
 	global $convert;
 	if(!is_writable($dir."/".$dest)){ print "can't create thumbnails, $dir/$dest is not writable<br>\n"; exit(0); }
         $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename\"";
+	`umask 0777`;
  
 	if(stristr($filename,".jpg") or stristr($filename,".png")){
                 `$cmd`;
@@ -303,6 +304,7 @@ function sqcvt($filename,$dir,$dest,$x,$y) {
         global $convert,$thumbSize;
         if(!is_writable($dir."/".$dest)){ print "can't create thumbnails, $dir/$dest is not writable<br>\n"; exit(0); }
         $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename\"";
+	`umask 0777`;
 
         if (stristr($filename,".gif")){
                 $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename.jpg\"";
@@ -341,7 +343,7 @@ function sqcvt($filename,$dir,$dest,$x,$y) {
                 $cmd = "$convert -crop $cropcmd \"$tmpFile\" \"$dir/$dest/$filename\"";
                 #print "c2: $cmd<br>";
                 `$cmd`;
-		$cmd = "rm -f $tmpFile";
+		$cmd = "rm -f \"$tmpFile\"";
 		`$cmd`;
         } else {
                 `$cmd`;
@@ -376,6 +378,7 @@ function genpreview($dir,$reldir,$add,$link,$imgonly){
 		$size = @getimagesize($source);
 		if($size && $size[1] > $size[0]){ $flip=1; }
 		if(!file_exists("$dir/pv_thumb.jpg") or (filectime($source) > filectime("$dir/pv_thumb.jpg"))){
+			`umask 0777`;
 			# here is where to check
 			$cmd = "$convert -resize $pv_thumbWidth"."x"."$pv_thumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
 			if($flip){
