@@ -1,3 +1,10 @@
+1.88
+* Changed default color scheme
+* Removed enter keyhandler to open full size version
+* Auto-resize (via javascript) in single image view if resolution is too small to see the whole image
+* Moved generated data out of the source image tree into a separate cache folder
+* General bug fixes
+
 1.85
 Fixed a bug where some webservers wouldn't let you write to /tmp/
 
