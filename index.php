@@ -51,6 +51,9 @@ Good luck! Send any questions / comments / concerns to php@loki.ws
 //this is the name that goes into the title for the site
 $site_name = "Your site here";
 
+//Where to put generated files. You need to set this dir writable by the webserver user
+$cacheDir = "iidx";
+
 //this is the path to convert (`which convert`)
 $convert = '/usr/bin/convert';
 // if that dosen't work, try this line, and change the path  vvv here
@@ -73,7 +76,7 @@ $thumbMode = "square";
 
 //These control the size and color of the general border around the thumbs in square mode
 $squareBorderSize = 7;
-$squareBorderColor = "#222222";
+$squareBorderColor = "#AAAAAA";
 
 //Allow linking to full quality version? (true or false)
 $fullQLink = true;
@@ -86,23 +89,23 @@ $dirContentsWidth = 5;
 
 // Standard Display Mode Colors
 // background color of the site
-$bgcolor = "#333333";
+$bgcolor = "#CCCCCC";
 // general text color
-$textColor = "#FFFFFF";
+$textColor = "#000000";
 // unvisited link color
-$linkColor = "#ccaaaa";
+$linkColor = "#222255";
 // active link color
-$alinkColor = "#eecccc";
+$alinkColor = "#444466";
 // visited link color
-$vlinkColor = "#aa8888";
+$vlinkColor = "#551111";
 // 'outer' table color
-$tdBgcolor = "#222222";
+$tdBgcolor = "#888888";
 // 'inner' table color
-$tdBgcolor2 = "#333333";
+$tdBgcolor2 = "#CCCCCC";
 // text color of the footer (copyright info etc)
-$footTextColor = "#888888";
+$footTextColor = "#111111";
 // background color for caption text
-$captionBGColor = "#222222";
+$captionBGColor = "#AAAAAA";
 
 // general font face
 $fontFace = "Verdana, Arial, Helvetica, sans-serif";
@@ -114,20 +117,20 @@ $titleFontSize = "+2";
 $imageTitleFontSize = "-1";
 
 //dimentions for thumbnails
-$thumbSize = 75;
+$thumbSize = 100;
 $thumbWidth = 120;
 $thumbHeight = 90;
 // dimentions for low-quality images
-$lowWidth = 640;
-$lowHeight = 480;
+$lowWidth = 800;
+$lowHeight = 600;
 // dimentions for directory previews
 $pv_thumbWidth = 100;
 $pv_thumbHeight = 75;
 
 //Calendar Mode Color Definitions
-$Calendar_borderTable_borderColor="#CCCCCC";
-$Calendar_dates_fontColor="#FFFFFF";
-$Calendar_link_fontColor="#FFCC99";
+$Calendar_borderTable_borderColor="#888888";
+$Calendar_dates_fontColor="#000000";
+$Calendar_link_fontColor="##222244";
 
 //this is the line that's shown at the top of each page
 $titleLine = "<p><center><font size=\"$titleFontSize\" face=\"$fontFace\">Camera Pictures</font></center></p>";
@@ -138,7 +141,8 @@ $titleLine = "<p><center><font size=\"$titleFontSize\" face=\"$fontFace\">Camera
 $Calendar_borderTable=".bordertable {  border: $Calendar_borderTable_borderColor; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px}";
 $Calendar_dates=".dates {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; color: $Calendar_dates_fontColor}";
 $Calendar_link=".link {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; color: $Calendar_link_fontColor; text-decoration: none}";
-$Styles="$Calendar_borderTable\n$Calendar_dates\n$Calendar_link";
+$extraStyle=".mainthumb {border: 1px solid #444444;}";
+$Styles="$Calendar_borderTable\n$Calendar_dates\n$Calendar_link\n$extraStyle";
 
 ####################################################################
 #### CONFIGURATION ENDS HERE #######################################
@@ -173,6 +177,7 @@ $footerLine="
 <script language=javascript src=\"http://loki.ws/awstats_misc_tracker.js\"></script>
 </body></html>";
 // if we didn't get a path, use the default one of just the prefix
+$add = '';
 if(!$where){
 	$rwhere = $relative;
 	$where = $prefix;
@@ -189,6 +194,7 @@ if(!$where){
         }
         $where = $prefix . ((!preg_match("/^\//",$where))?'/':'') . $where;
 }
+$add = preg_replace("/^\//","",$add); //strip initial slashes
 $rwhere = preg_replace("/\/\//","/",$rwhere);
 $where .= '/'; //need / for find's weirdness
 if($dirDisplayMode=="calendar" && $cmpfunc != "jdircmp") $dirDisplayMode="standard";
@@ -203,7 +209,8 @@ function checkfiletypes($file){
 	$filetypes = array ("wpd", "txt", "avi", "rm", "mpg", "mpeg", "url", "mov", "wmv");
 
 	foreach($filetypes as $type){
-		if(stristr($file,".$type") and !(stristr($file,"description.txt")) and !(stristr($file,"captions.txt"))){
+		//if(stristr($file,".$type") and !(stristr($file,"description.txt")) and !(stristr($file,"captions.txt"))){
+		if(preg_match("/$type$/i",$file) and !(stristr($file,"description.txt")) and !(stristr($file,"captions.txt"))){
 			return 1;
 		}
 	}
@@ -279,10 +286,45 @@ function deprefix($array,$where){
 	return $array;
 }
 
+function ckdir($dir){
+    $dir = preg_replace("/\/\//","/",$dir);
+    if(is_dir($dir)) return true;
+    $stack = array(basename($dir));
+    $path = null;
+    while ( ($d = dirname($dir) ) ) {
+	if ( !is_dir($d) ) {
+	    $stack[] = basename($d);
+	    $dir = $d;
+	} else {
+	    $path = $d;
+	    break;
+	}
+    }
+
+    if ( ( $path = realpath($path) ) === false )
+	return false;
+
+    $created = array();
+    for ( $n = count($stack) - 1; $n >= 0; $n-- ) {
+	$s = $path . '/'. $stack[$n];                                     
+	if ( !mkdir($s) ) {
+	    for ( $m = count($created) - 1; $m >= 0; $m-- )
+		rmdir($created[$m]);
+	    return false;
+	}
+	$created[] = $s;     
+	$path = $s;
+    }
+    return true;
+}
+
 function cvt($filename,$dir,$dest,$x,$y) {
-	global $convert;
-	if(!is_writable($dir."/".$dest)){ print "can't create thumbnails, $dir/$dest is not writable<br>\n"; exit(0); }
-        $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename\"";
+	global $convert,$cacheDir,$add,$prefix;
+	if(!is_writable("$prefix/$cacheDir")){ print "can't create thumbnails, $prefix/$cacheDir is not writable<br>\n"; exit(0); }
+	ckdir("$prefix/$cacheDir/$add/$dest");
+	$odir = $dir;
+	$dir = "$prefix/$cacheDir/$add";
+        $cmd = "$convert -resize $x".'x'."$y \"$odir/$filename\" \"$dir/$dest/$filename\"";
 	`umask 0000`;
  
 	if(stristr($filename,".jpg") or stristr($filename,".png")){
@@ -290,7 +332,7 @@ function cvt($filename,$dir,$dest,$x,$y) {
 		chmod("$dir/$dest/$filename",0777);
                 return $filename;
         } else if (stristr($filename,".gif")){
-                $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename.jpg\"";
+                $cmd = "$convert -resize $x".'x'."$y \"$odir/$filename\" \"$dir/$dest/$filename.jpg\"";
                 `$cmd`;
                 `mv $dir/$dest/$filename.jpg.0 $dir/$dest/$filename.jpg`;
                 `rm -f $dir/$dest/$filename.jpg.*`;
@@ -301,13 +343,16 @@ function cvt($filename,$dir,$dest,$x,$y) {
 }	}
 
 function sqcvt($filename,$dir,$dest,$x,$y) {
-        global $convert,$thumbSize;
-        if(!is_writable($dir."/".$dest)){ print "can't create thumbnails, $dir/$dest is not writable<br>\n"; exit(0); }
-        $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename\"";
+        global $convert,$thumbSize,$cacheDir,$add,$prefix;
+        if(!is_writable("$prefix/$cacheDir")){ print "can't create thumbnails, $prefix/$cacheDir is not writable<br>\n"; exit(0); }
+	ckdir("$prefix/$cacheDir/$add/$dest");
+	$odir = $dir;
+	$dir = "$prefix/$cacheDir/$add";
+        $cmd = "$convert -resize $x".'x'."$y \"$odir/$filename\" \"$dir/$dest/$filename\"";
 	`umask 0000`;
 
         if (stristr($filename,".gif")){
-                $cmd = "$convert -resize $x".'x'."$y \"$dir/$filename\" \"$dir/$dest/$filename.jpg\"";
+                $cmd = "$convert -resize $x".'x'."$y \"$odir/$filename\" \"$dir/$dest/$filename.jpg\"";
                 `$cmd`;
                 `mv $dir/$dest/$filename.jpg.0 $dir/$dest/$filename.jpg`;
                 `rm -f $dir/$dest/$filename.jpg.*`;
@@ -318,13 +363,13 @@ function sqcvt($filename,$dir,$dest,$x,$y) {
 		$tmpFile = "$dir/$dest/tmp-$trandint.jpg";
                 #first resize to a temp file, then crop to the dest
                 $rcmd = "";
-                $info = getimagesize("$dir/$filename");
+                $info = getimagesize("$odir/$filename");
                 if($info[0] > $info[1]){
                         $rcmd = "99999x$thumbSize";
                 } else {
                         $rcmd = $thumbSize."x99999";
                 }
-                $cmd = "$convert -resize $rcmd \"$dir/$filename\" \"$tmpFile\"";
+                $cmd = "$convert -resize $rcmd \"$odir/$filename\" \"$tmpFile\"";
                 #print "c1: $cmd<br>";
                 `$cmd`;
                 //determine new size info
@@ -348,12 +393,12 @@ function sqcvt($filename,$dir,$dest,$x,$y) {
         } else {
                 `$cmd`;
         }
-        chmod("$dir/$dest/$filename",0777);
+	chmod("$dir/$dest/$filename",0777);
         return $filename;
 }
 
 function genpreview($dir,$reldir,$add,$link,$imgonly){
-	global $convert,$relative,$pv_thumbWidth,$pv_thumbHeight;
+	global $convert,$relative,$pv_thumbWidth,$pv_thumbHeight,$prefix,$cacheDir,$add;
 	$source = "";
 	#print "checking $dir/preview.jpg\n<br>";
 	if(file_exists("$dir/preview.jpg")){
@@ -377,18 +422,19 @@ function genpreview($dir,$reldir,$add,$link,$imgonly){
 		$flip=0;
 		$size = @getimagesize($source);
 		if($size && $size[1] > $size[0]){ $flip=1; }
-		if(!file_exists("$dir/pv_thumb.jpg") or (filectime($source) > filectime("$dir/pv_thumb.jpg"))){
-			`umask 0000`;
+		$cdir = "$prefix/$cacheDir/" . urldecode("$add/$reldir");
+		ckdir($cdir);
+		if(!file_exists("$cdir/pv_thumb.jpg") or (filectime($source) > filectime("$cdir/pv_thumb.jpg"))){
 			# here is where to check
-			$cmd = "$convert -resize $pv_thumbWidth"."x"."$pv_thumbHeight \"$source\" \"$dir/pv_thumb.jpg\"";
+			$cmd = "$convert -resize $pv_thumbWidth"."x"."$pv_thumbHeight \"$source\" \"$cdir/pv_thumb.jpg\"";
 			if($flip){
-				$cmd = "$convert -resize $pv_thumbHeight"."x"."$pv_thumbWidth \"$source\" \"$dir/pv_thumb.jpg\"";
+				$cmd = "$convert -resize $pv_thumbHeight"."x"."$pv_thumbWidth \"$source\" \"$cdir/pv_thumb.jpg\"";
 			}
 			`$cmd`;
-			$cmd = "chmod a+rwx \"$dir/pv_thumb.jpg\"";
+			$cmd = "chmod a+rwx \"$cdir/pv_thumb.jpg\"";
 			`$cmd`;
 		}
-		if(file_exists("$dir/pv_thumb.jpg")){
+		if(file_exists("$cdir/pv_thumb.jpg")){
 			$x=$pv_thumbWidth;
 			$y=$pv_thumbHeight;
 			if($flip){
@@ -398,12 +444,12 @@ function genpreview($dir,$reldir,$add,$link,$imgonly){
 			if(!$imgonly) print "<a href=\"$link\"><center>";
 			$im = "";
 			if($add != ""){
-				$im = "$relative/$add/$reldir/pv_thumb.jpg";
+				$im = "$relative/$cacheDir/$add/$reldir/pv_thumb.jpg";
 			} else {
-				$im = "$reldir/pv_thumb.jpg";
+				$im = "$cacheDir/$reldir/pv_thumb.jpg";
 			}
 			$im = preg_replace("/\/\//","/",$im);
-			print "<img border=\"0\" width=\"$x\" height=\"$y\" src=\"$im\">";
+			print "<img class=\"mainthumb\" border=\"0\" width=\"$x\" height=\"$y\" src=\"$im\">";
 			if(!$imgonly) print "</center></a>";
 		}
 	}
@@ -507,11 +553,12 @@ if($where){
 <?
 if($mode == "single"){
 	$parts = preg_split("/\//",$img);
+	array_shift($parts);
 	$file = array_pop($parts);
 	$origdir = join("/",$parts);
-	array_shift($parts);
+	#array_shift($parts);
 	if(strlen($relative) > 2){
-		array_shift($parts);
+		#array_shift($parts);
 		if(preg_match("/$parts[0]/",$relative)){
 			array_shift($parts);
 		}
@@ -531,8 +578,11 @@ if($mode == "single"){
 	$tfl=preg_replace("/%20/"," ",$tfl);
 	$timg = preg_replace("/\\\\/","",$img);
 	$timg = preg_replace("/'/","%27",$timg);
+	$timg = preg_replace("/,/","%2C",$timg);
+	$timg = preg_replace("/\\(/","%28",$timg);
+	$timg = preg_replace("/\\)/","%29",$timg);
 	$timg = preg_replace("/\/\//","/",$timg);
-	$pics = getPixArray($prefix.$dir);
+	$pics = getPixArray($prefix."/".$cacheDir.$dir);
 	$idx = array_search($tfl,$pics);
 	$next = $idx+1;
 	$prev = $idx-1;
@@ -541,8 +591,8 @@ if($mode == "single"){
 	if($prev < 0) $prev = $size;
 	$nfile = $pics[$next];
 	$pfile = $pics[$prev];
-	$nfile = runc($origdir."/".$nfile);
-	$pfile = runc($origdir."/".$pfile);
+	$nfile = runc($cacheDir."/".$origdir."/".$nfile);
+	$pfile = runc($cacheDir."/".$origdir."/".$pfile);
 	$nlink = "$PHP_SELF?mode=single&img=$nfile";
 	$plink = "$PHP_SELF?mode=single&img=$pfile";
 	print "</title>";
@@ -552,6 +602,9 @@ if($mode == "single"){
 	if($auto == "true"){
 		print "<meta HTTP-EQUIV=\"Refresh\" Content=\"$timer;URL=$autolink\">";
 	}
+	print "<style>\n";
+	print "#imaage {border: 2px solid #444444;}\n";
+	print "</style>\n";
 	print "</head>";
 	print "<body bgcolor=\"$bgcolor\" text=\"$textColor\" link=\"$linkColor\" alink=\"$alinkColor\" vlink=\"$vlinkColor\">";
 	print $titleLine;
@@ -560,14 +613,14 @@ if($mode == "single"){
 	crumnav($wheredir,$tfl);
 	print "<tr><td><table align=center border=0>";
 	print "<tr><td colspan=3 align=center>";
-	$imsz = getimagesize($prefix.$dir."/".$tfl);
+	$imsz = getimagesize($prefix."/".$cacheDir.$dir."/".$tfl);
 	$w = $imsz[0];
 	$h = $imsz[1];
 	$fontstuff = "<font face=\"$fontFace\">";
 	if($fullQLink){
 	    print "<a href=\"$wheredir/$tfl\" target=\"_new\">";
 	}
-	print "<img border=\"0\" src=\"$timg\"";
+	print "<img id=\"imaage\" border=\"0\" src=\"$timg\"";
 	if($w > 0) print "width=$w height=$h";
 	print ">";
 	if($fullQLink){
@@ -575,16 +628,16 @@ if($mode == "single"){
 	}
 	print "</td></tr>\n";
 	print "<tr><td align=center>$fontstuff";
-	print "<a href=\"$plink\" accesskey=\"p\"><b>P</b>rev</a> </font>";
+	print "<a href=\"$plink\" accesskey=\"p\"><b>P</b>rev</a></font>";
 	print "</td><td align=center>$fontstuff";
 	//print "<A HREF=\"javascript:history.go(-1)\">Back</a>\n";
 	print "<a href=\"$backlink\" accesskey=\"b\"><b>B</b>ack</a></font>\n";
 	print "</td><td align=center>$fontstuff";
-	print " <a href=\"$nlink\" accesskey=\"n\"><b>N</b>ext</a> </font>";
+	print " <a href=\"$nlink\" accesskey=\"n\"><b>N</b>ext</a><img width=\"0\" height=\"0\" src=\"$nfile\"/></font>";
 	print "</td></tr>";
 	$capt = getCaption($tfl,$prefix."/".$wheredir);
 	if(strlen($capt) > 0){
-	    print "<tr><td colspan=\"3\" align=\"center\" bgcolor=\"$captionBGColor\" style=\"width:$lowWidth"."px;padding-bottom:10px;padding-top:10px;\">$fontstuff$capt</font></td></tr>\n";
+	    print "<tr><td colspan=\"3\" align=\"center\" bgcolor=\"$captionBGColor\" id=\"captHolder\" style=\"width:$lowWidth"."px;padding-bottom:10px;padding-top:10px;\">$fontstuff$capt</font></td></tr>\n";
 	}
         print "<tr><td colspan=3 align=center>$fontstuff".($idx+1)." / ".($size+1)." </font></td></tr>";
 	if($auto == "true"){
@@ -608,8 +661,6 @@ function keyhandler(e){
 	window.location = "<?=$plink?>";
     } else if(e.keyCode == 39 || e.keyCode == 32){ //right
 	window.location = "<?=$nlink?>";
-    } else if(e.keyCode == 13){ //right
-	window.open("<?="$wheredir/$tfl"?>");
     } else if(String.fromCharCode(e.keyCode) == "b" || String.fromCharCode(e.keyCode) == "B"){
 	window.location = "<?=$backlink?>";
     } else if(String.fromCharCode(e.keyCode) == "h" || String.fromCharCode(e.keyCode) == "H"){
@@ -619,6 +670,19 @@ function keyhandler(e){
     //}
 }
 document.onkeyup = keyhandler;
+
+var i = document.getElementById('imaage');
+var c = document.getElementById('captHolder');
+
+var buffSize = 300;
+var hi = screen.availHeight;
+if(hi < ( i.height + buffSize )){
+    var maxH = hi - buffSize;
+    var nw = (maxH * i.width) / i.height;
+    i.width = nw;
+    i.height = maxH;
+    c.style.width = nw;
+}
 //-->
 </script>
 	<?
@@ -651,8 +715,8 @@ $flag = 1;
 
 $pics = getPixArray($where);
 
-if(file_exists("$where"."tn/index.lst")){
-	$upic = file("$where"."tn/index.lst");
+if(file_exists("$prefix/$cacheDir/$add/tn/index.lst")){
+	$upic = file("$prefix/$cacheDir/$add/tn/index.lst");
 	$count = 0;
 	foreach($upic as $asdf){
 		$upic[$count] = substr($asdf,0,-1); // chomp
@@ -661,8 +725,8 @@ if(file_exists("$where"."tn/index.lst")){
 } else {
 	$upic = "";
 }
-if(file_exists("$where"."Low/index.lst")){
-	$vpic = file("$where"."Low/index.lst");
+if(file_exists("$prefix/$cacheDir/$add/Low/index.lst")){
+	$vpic = file("$prefix/$cacheDir/$add/Low/index.lst");
 	$count = 0;
 	foreach($vpic as $asdf){
 		$vpic[$count] = substr($asdf,0,-1); // chomp
@@ -673,14 +737,15 @@ if(file_exists("$where"."Low/index.lst")){
 }
 
 // check for thumbs
-if((!file_exists("$where"."tn") or ($pics != $upic)) and $pics){
-	if(!is_writable($where)){ print "can't create thumbnails, $where is not writable<br>\n"; exit(0); }
+ckdir("$prefix/$cacheDir/$add");
+if((!file_exists("$prefix/$cacheDir/$add/tn") or ($pics != $upic)) and $pics){
+	if(!is_writable("$prefix/$cacheDir")){ print "can't create thumbnails, $prefix/$cacheDir is not writable<br>\n"; exit(0); }
 	$flag = 0;
-	if(!file_exists("$where"."doingthumbs")){
-		touch("$where"."doingthumbs");
+	if(!file_exists("$prefix/$cacheDir/$add/doingthumbs")){
+		touch("$prefix/$cacheDir/$add/doingthumbs");
 		//make thumbs
-		@mkdir("$where"."tn",0777);
-		if($file = fopen("$where"."tn/index.lst","w+")){
+		ckdir("$prefix/$cacheDir/$add/tn");
+		if($file = fopen("$prefix/$cacheDir/$add/tn/index.lst","w+")){
 			foreach($pics as $pic){
 				fwrite($file,$pic);
 				fwrite($file,"\n");
@@ -689,9 +754,9 @@ if((!file_exists("$where"."tn") or ($pics != $upic)) and $pics){
 			print "error indexing thumbnails<br>\n";
 		}
 		fclose($file);
-		chmod("$where"."tn/index.lst",0777);
+		chmod("$prefix/$cacheDir/$add/tn/index.lst",0777);
 		foreach ($pics as $pic){
-			@unlink("$where"."tn/$pic");
+			@unlink("$prefix/$cacheDir/$add/tn/$pic");
 			if($thumbMode == "square"){ 
 			    $filegot = sqcvt($pic,$where,"tn",$thumbSize,$thumbSize);
 			} else {
@@ -704,7 +769,7 @@ if((!file_exists("$where"."tn") or ($pics != $upic)) and $pics){
 			}
 		}
 
-		unlink("$where"."doingthumbs");
+		unlink("$prefix/$cacheDir/$add/doingthumbs");
 		$flag = 1;
 	} else {
 		print "</table>making thumbnails, please wait<br>\n";
@@ -717,14 +782,14 @@ if((!file_exists("$where"."tn") or ($pics != $upic)) and $pics){
 
 
 // check for lows
-if((!file_exists("$where"."Low") or ($pics != $vpic)) and $pics){
-	if(!is_writable($where)){ print "can't create thumbnails, $where is not writable<br>\n"; exit(0); }
+if((!file_exists("$prefix/$cacheDir/$add/Low") or ($pics != $vpic)) and $pics){
+	if(!is_writable("$prefix/$cacheDir")){ print "can't create thumbnails, $prefix/$cacheDir is not writable<br>\n"; exit(0); }
 	$flag = 0;
-	if(!file_exists("$where"."doinglows")){
-		touch("$where"."doinglows");
+	if(!file_exists("$prefix/$cacheDir/$add/doinglows")){
+		touch("$prefix/$cacheDir/$add/doinglows");
 		//make thumbs
-		@mkdir("$where"."Low",0777);
-		if($file = fopen("$where"."Low/index.lst","w+")){
+		ckdir("$prefix/$cacheDir/$add/Low");
+		if($file = fopen("$prefix/$cacheDir/$add/Low/index.lst","w+")){
 			foreach($pics as $pic){
 				fwrite($file,$pic);
 				fwrite($file,"\n");
@@ -733,9 +798,9 @@ if((!file_exists("$where"."Low") or ($pics != $vpic)) and $pics){
 			print "error indexing thumbnails<br>\n";
 		}
 		fclose($file);
-		chmod("$where"."Low/index.lst",0777);
+		chmod("$prefix/$cacheDir/$add/Low/index.lst",0777);
 		foreach ($pics as $pic){
-			@unlink("$where"."Low/$pic");
+			@unlink("$prefix/$cacheDir/$add/Low/$pic");
 			$size = getimagesize("$where"."$pic");
 			if(($size[0] > $size[1]) or (!$size)){
 				$filegot = cvt($pic,$where,"Low",$lowWidth,$lowHeight);
@@ -744,7 +809,7 @@ if((!file_exists("$where"."Low") or ($pics != $vpic)) and $pics){
 			}
 		}
 
-		unlink("$where"."doinglows");
+		unlink("$prefix/$cacheDir/$add/doinglows");
 		$flag = 1;
 	} else {
 		print "</table>making Low quality images, please wait<br>\n";
@@ -772,12 +837,12 @@ if($flag == 1 and $pics){
 			print "</tr><tr align=center>\n";
 		}
 		$lpic = preg_replace("/ /","%20",$pic);
-		if($first == "") $first = "$rwhere/Low/$lpic";
+		if($first == "") $first = "$prefix/$cacheDir/$add/Low/$lpic";
 		if($thumbMode == "square"){
-		    print "<td bgcolor=\"$tdBgcolor\"><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\">";
-		    $size = getimagesize("$where/tn/"."$pic");
+		    print "<td bgcolor=\"$tdBgcolor\"><a href=\"$PHP_SELF?mode=single&img=".runc("$cacheDir/$add/Low/$lpic")."\">";
+		    $size = getimagesize("$prefix/$cacheDir/$add/tn/"."$pic");
 		    #print "<img style=\"border:1px solid #000000\" src=\"$rwhere/tn/$lpic\" width=\"$thumbSize\" height=\"$thumbSize\"><br>";
-		    print "<img border=\"0\" src=\"$rwhere/tn/$lpic\" width=\"$thumbSize\" height=\"$thumbSize\"><br>";
+		    print "<img border=\"0\" src=\"$cacheDir/$add/tn/$lpic\" width=\"$thumbSize\" height=\"$thumbSize\"><br>";
 		    print "</a></td>\n";
 		} else {
 		    $mxSize=0;
@@ -790,32 +855,32 @@ if($flag == 1 and $pics){
 			    $pn = $pic;
 			    $pn .= '.jpg';
 			    $lpn = preg_replace("/ /","%20",$pn);
-			    print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpn")."\">";
-			    $size = getimagesize("$where/tn/"."$pn");
+			    print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$cacheDir/$add/Low/$lpn")."\">";
+			    $size = getimagesize("$prefix/$cacheDir/$add/tn/"."$pn");
 			    if ($size[0] > $mxSize or $size[1] > $mxSize){
 				    if($size[0] > $size[1]){
-					    print "<img border=\"0\" src=\"$rwhere/tn/$lpn\" width=\"$thumbWidth\" height=\"$thumbHeight\"><br>";
+					    print "<img border=\"0\" src=\"$cacheDir/$add/tn/$lpn\" width=\"$thumbWidth\" height=\"$thumbHeight\"><br>";
 				    } else {
-					    print "<img border=\"0\" src=\"$rwhere/tn/$lpn\" width=\"$thumbHeight\" height=\"$thumbWidth\"><br>";
+					    print "<img border=\"0\" src=\"$cacheDir/$add/tn/$lpn\" width=\"$thumbHeight\" height=\"$thumbWidth\"><br>";
 				    }
 			    } else {
-				    print "<img border=0 src=\"$rwhere/tn/$lpn\"><br>";
+				    print "<img border=0 src=\"$cacheDir/$add/tn/$lpn\"><br>";
 			    }
-			    print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpn")."\"><font $fontstuff>Low Quality</font></a></td>\n";
+			    print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$cacheDir/$add/Low/$lpn")."\"><font $fontstuff>Low Quality</font></a></td>\n";
 
 		    } else {
-			    print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\">";
-			    $size = getimagesize("$where/tn/"."$pic");
+			    print "<td bgcolor=\"$tdBgcolor\"><font $titlestuff>$pic</font><br><a href=\"$PHP_SELF?mode=single&img=".runc("$cacheDir/$add/Low/$lpic")."\">";
+			    $size = getimagesize("$prefix/$cacheDir/$add/tn/"."$pic");
 			    if ($size[0] > $mxSize or $size[1] > $mxSize){
 				    if($size[0] > $size[1]){
-					    print "<img border=0 src=\"$rwhere/tn/$lpic\" width=$thumbWidth height=$thumbHeight><br>";
+					    print "<img border=0 src=\"$cacheDir/$add/tn/$lpic\" width=$thumbWidth height=$thumbHeight><br>";
 				    } else {
-					    print "<img border=0 src=\"$rwhere/tn/$lpic\" width=$thumbHeight height=$thumbWidth><br>";
+					    print "<img border=0 src=\"$cacheDir/$add/tn/$lpic\" width=$thumbHeight height=$thumbWidth><br>";
 				    }
 			    } else {
-				    print "<img border=0 src=\"$rwhere/tn/$lpic\"><br>";
+				    print "<img border=0 src=\"$cacheDir/$add/tn/$lpic\"><br>";
 			    }
-			    print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/Low/$lpic")."\"><font $fontstuff>Low Quality</font></a></td>\n";
+			    print "</a><a href=\"$PHP_SELF?mode=single&img=".runc("$rwhere/$lpic")."\"><font $fontstuff>High Quality</font></a> <a href=\"$PHP_SELF?mode=single&img=".runc("$cacheDir/$add/Low/$lpic")."\"><font $fontstuff>Low Quality</font></a></td>\n";
 		    }
 		}
 		$count++;
@@ -854,6 +919,7 @@ array_shift($files);
 
 print "<tr><td><table border=0 bgcolor=\"$tdBgcolor\" align=center><tr>\n";
 $count = 0;
+$vc = 0;
 foreach($files as $file){
 	if(ereg("url",$file)){
 		//url case
@@ -904,7 +970,7 @@ print "</tr></table></td></tr>\n";
 $dirs = array ("");
 if($han = opendir("$where")){
 	while( false !== ($file = readdir($han))){
-		if((filetype($where.$file) == "dir") and $file != "Low" and $file != "tn" and $file != "." and $file != ".." and $file != "CVS") array_push($dirs,$file);
+		if((filetype($where.$file) == "dir") and $file != "Low" and $file != "tn" and $file != "." and $file != ".." and $file != "CVS" and $file != "js" and $file != $cacheDir) array_push($dirs,$file);
 	}
 }
 array_shift($dirs);
