@@ -837,7 +837,7 @@ if($flag == 1 and $pics){
 			print "</tr><tr align=center>\n";
 		}
 		$lpic = preg_replace("/ /","%20",$pic);
-		if($first == "") $first = "$prefix/$cacheDir/$add/Low/$lpic";
+		if($first == "") $first = "$cacheDir/$add/Low/$lpic";
 		if($thumbMode == "square"){
 		    print "<td bgcolor=\"$tdBgcolor\"><a href=\"$PHP_SELF?mode=single&img=".runc("$cacheDir/$add/Low/$lpic")."\">";
 		    $size = getimagesize("$prefix/$cacheDir/$add/tn/"."$pic");
@@ -887,7 +887,6 @@ if($flag == 1 and $pics){
 	}
 	print "</tr></table></td></tr>\n";
 
-	//print "first is $first\n";
 	$img = $first;
 	$fontstuff="<font face=\"$fontFace\">";
 	print "<tr><td><table border=0 align=center>";
